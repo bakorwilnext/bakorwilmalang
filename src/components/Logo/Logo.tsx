@@ -31,7 +31,7 @@ export const Logo = (props: Props) => {
   
   // Calculate width based on aspect ratio if dimensions are available
   let calculatedWidth = 193 // default width
-  let calculatedHeight = fixedHeight
+  const calculatedHeight = fixedHeight
   
   if (logo?.width && logo?.height) {
     // Calculate width maintaining aspect ratio with fixed height
