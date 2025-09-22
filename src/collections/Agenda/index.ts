@@ -17,7 +17,7 @@ export const Agenda: CollectionConfig = {
     category: true,
   },
   admin: {
-    defaultColumns: ['title', 'category', 'startDate', 'endDate', 'updatedAt'],
+    defaultColumns: ['title', 'category', 'startDate', 'location', 'updatedAt'],
     useAsTitle: 'title',
   },
   fields: [
@@ -41,10 +41,6 @@ export const Agenda: CollectionConfig = {
       type: 'select',
       required: true,
       options: [
-        {
-          label: 'All',
-          value: 'all',
-        },
         {
           label: 'Events',
           value: 'events',
@@ -95,79 +91,6 @@ export const Agenda: CollectionConfig = {
       type: 'text',
       admin: {
         placeholder: 'Instructor name...',
-      },
-    },
-    {
-      name: 'isAllDay',
-      type: 'checkbox',
-      defaultValue: false,
-    },
-    {
-      name: 'isRecurring',
-      type: 'checkbox',
-      defaultValue: false,
-    },
-    {
-      name: 'recurringPattern',
-      type: 'select',
-      admin: {
-        condition: (data) => data.isRecurring,
-      },
-      options: [
-        {
-          label: 'Daily',
-          value: 'daily',
-        },
-        {
-          label: 'Weekly',
-          value: 'weekly',
-        },
-        {
-          label: 'Monthly',
-          value: 'monthly',
-        },
-      ],
-    },
-    {
-      name: 'color',
-      type: 'select',
-      defaultValue: 'cyan',
-      options: [
-        {
-          label: 'Cyan',
-          value: 'cyan',
-        },
-        {
-          label: 'Blue',
-          value: 'blue',
-        },
-        {
-          label: 'Green',
-          value: 'green',
-        },
-        {
-          label: 'Purple',
-          value: 'purple',
-        },
-        {
-          label: 'Pink',
-          value: 'pink',
-        },
-        {
-          label: 'Yellow',
-          value: 'yellow',
-        },
-        {
-          label: 'Red',
-          value: 'red',
-        },
-      ],
-    },
-    {
-      name: 'publishedAt',
-      type: 'date',
-      admin: {
-        position: 'sidebar',
       },
     },
   ],

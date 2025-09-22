@@ -14,7 +14,7 @@ import { PDFUpload } from '@/blocks/Form/PDFUpload/blocks'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
-import { linkPDFsToSubmission } from '@/hooks/LinkPDFsToSubmission'
+// import { linkPDFsToSubmission } from '@/hooks/LinkPDFsToSubmission'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
@@ -82,9 +82,9 @@ export const plugins: Plugin[] = [
           return field
         })
       },
-      hooks: {
-        afterChange: [linkPDFsToSubmission], // Add this hook
-      },
+      // hooks: {
+      //   afterChange: [linkPDFsToSubmission],
+      // },
     },
   }),
   searchPlugin({

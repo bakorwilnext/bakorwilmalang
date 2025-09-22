@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, X, MapPin, User, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, MapPin, User, Clock } from 'lucide-react';
 
 interface AgendaItem {
   id: string;
@@ -38,7 +38,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
   disableInnerContainer = false,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedFilters, setSelectedFilters] = useState<string[]>(['all']);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(['events', 'classes', 'performances', 'workshops']);
   const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<AgendaItem | null>(null);
@@ -111,7 +111,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
 
   const getFilteredEvents = () => {
     return agendaItems.filter(item => {
-      const matchesFilter = selectedFilters.includes('all') || selectedFilters.includes(item.category);
+      const matchesFilter = selectedFilters.includes(item.category);
       return matchesFilter;
     });
   };
@@ -285,20 +285,36 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
     setSelectedEvent(null);
   };
 
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      events: 'bg-blue-100 text-blue-800 border-blue-200',
-      classes: 'bg-green-100 text-green-800 border-green-200',
-      performances: 'bg-purple-100 text-purple-800 border-purple-200',
-      workshops: 'bg-orange-100 text-orange-800 border-orange-200',
-    };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200';
+  // const getCategoryColor = (category: string) => {
+  //   const colors = {
+  //     events: 'bg-blue-100 text-blue-800 border-blue-200',
+  //     classes: 'bg-green-100 text-green-800 border-green-200',
+  //     performances: 'bg-purple-100 text-purple-800 border-purple-200',
+  //     workshops: 'bg-orange-100 text-orange-800 border-orange-200',
+  //   };
+  //   return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200';
+  // };
+
+  const getDateRangeDisplay = () => {
+    const displayDays = getDisplayDays();
+    if (displayDays.length === 0) {
+      return `${monthNames[currentDate.getMonth()].toUpperCase()}`;
+    }
+
+    const startDay = displayDays[0];
+    const endDay = displayDays[displayDays.length - 1];
+
+    // If all days are in the same month
+    if (startDay.getMonth() === endDay.getMonth()) {
+      return `${startDay.getDate()}-${endDay.getDate()} ${monthNames[startDay.getMonth()].toUpperCase()}`;
+    } else {
+      // If days span across different months
+      return `${startDay.getDate()} ${monthNames[startDay.getMonth()].substring(0, 3).toUpperCase()} - ${endDay.getDate()} ${monthNames[endDay.getMonth()].substring(0, 3).toUpperCase()}`;
+    }
   };
 
   const displayDays = getDisplayDays();
-  const weekRange = displayDays.length > 0 ? 
-    `${displayDays[0].getDate()}-${displayDays[displayDays.length - 1].getDate()} ${monthNames[currentDate.getMonth()].toUpperCase()}` :
-    `${monthNames[currentDate.getMonth()].toUpperCase()}`;
+  const weekRange = getDateRangeDisplay();
 
   if (loading) {
     return (
@@ -345,32 +361,25 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
               <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center lg:text-left">
                 {title}
               </h1>
-
-              {/* Date Picker */}
-              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                <Calendar className="w-4 h-4" />
-                <span className="text-sm font-medium">SELECT DATE</span>
-                <ChevronRight className="w-4 h-4" />
-              </div>
             </div>
 
             {/* Category Filters */}
-            {showFilters && (
+            {/* {showFilters && (
               <div className="mt-6 flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedFilters(['all'])}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedFilters.includes('all')
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  All Events
-                </button>
                 {allowedCategories.map(category => (
                   <button
                     key={category}
-                    onClick={() => setSelectedFilters([category])}
+                    onClick={() => {
+                      if (selectedFilters.includes(category)) {
+                        // Remove filter if only one is selected, otherwise just remove this one
+                        if (selectedFilters.length > 1) {
+                          setSelectedFilters(selectedFilters.filter(f => f !== category));
+                        }
+                      } else {
+                        // Add filter
+                        setSelectedFilters([...selectedFilters, category]);
+                      }
+                    }}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize ${
                       selectedFilters.includes(category)
                         ? 'bg-blue-600 text-white'
@@ -381,7 +390,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                   </button>
                 ))}
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Week View */}
@@ -421,6 +430,12 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                       }`}>
                         {day.getDate()}
                       </div>
+                      {/* Show month for first day or when month changes */}
+                      {(index === 0 || (displayDays[index - 1] && day.getMonth() !== displayDays[index - 1].getMonth())) && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {monthNames[day.getMonth()].substring(0, 3).toUpperCase()}
+                        </div>
+                      )}
                     </div>
 
                     {/* Events */}
@@ -439,11 +454,11 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                             onClick={() => handleEventClick(event)}
                           >
                             {/* Category Badge */}
-                            <div className="mb-3">
+                            {/* <div className="mb-3">
                               <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getCategoryColor(event.category)}`}>
                                 {event.category}
                               </span>
-                            </div>
+                            </div> */}
 
                             {/* Time */}
                             <div className="flex items-center text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
@@ -498,9 +513,9 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3">
-                <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full border ${getCategoryColor(selectedEvent.category)}`}>
+                {/* <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full border ${getCategoryColor(selectedEvent.category)}`}>
                   {selectedEvent.category}
-                </span>
+                </span> */}
               </div>
               <button
                 onClick={closeModal}

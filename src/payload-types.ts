@@ -74,7 +74,6 @@ export interface Config {
     users: User;
     internships: Internship;
     agenda: Agenda;
-    pdfs: Pdf;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -93,7 +92,6 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     internships: InternshipsSelect<false> | InternshipsSelect<true>;
     agenda: AgendaSelect<false> | AgendaSelect<true>;
-    pdfs: PdfsSelect<false> | PdfsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1011,47 +1009,14 @@ export interface Agenda {
   id: string;
   title: string;
   description?: string | null;
-  category: 'all' | 'events' | 'classes' | 'performances' | 'workshops';
+  category: 'events' | 'classes' | 'performances' | 'workshops';
   startDate: string;
   endDate?: string | null;
   location?: string | null;
   instructor?: string | null;
-  isAllDay?: boolean | null;
-  isRecurring?: boolean | null;
-  recurringPattern?: ('daily' | 'weekly' | 'monthly') | null;
-  color?: ('cyan' | 'blue' | 'green' | 'purple' | 'pink' | 'yellow' | 'red') | null;
-  publishedAt?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * PDF files uploaded through forms
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pdfs".
- */
-export interface Pdf {
-  id: string;
-  title?: string | null;
-  description?: string | null;
-  uploadedBy?: string | null;
-  /**
-   * ID of the form submission this PDF belongs to
-   */
-  formSubmissionId?: string | null;
-  downloadCount?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1253,10 +1218,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'agenda';
         value: string | Agenda;
-      } | null)
-    | ({
-        relationTo: 'pdfs';
-        value: string | Pdf;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1742,36 +1703,9 @@ export interface AgendaSelect<T extends boolean = true> {
   endDate?: T;
   location?: T;
   instructor?: T;
-  isAllDay?: T;
-  isRecurring?: T;
-  recurringPattern?: T;
-  color?: T;
-  publishedAt?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pdfs_select".
- */
-export interface PdfsSelect<T extends boolean = true> {
-  title?: T;
-  description?: T;
-  uploadedBy?: T;
-  formSubmissionId?: T;
-  downloadCount?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
