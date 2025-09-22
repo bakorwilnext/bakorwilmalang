@@ -31,7 +31,6 @@ export const ArchiveBlock: React.FC<
 
   const payload = await getPayload({ config: configPromise })
 
-  // Fetch all categories for the filter
   const fetchedCategories = await payload.find({
     collection: 'categories',
     depth: 1,
@@ -78,7 +77,7 @@ export const ArchiveBlock: React.FC<
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            Articles
+            Artikel
           </h1>
           {introContent && (
             <div className="max-w-3xl mx-auto">
@@ -91,7 +90,6 @@ export const ArchiveBlock: React.FC<
           )}
         </div>
 
-        {/* Interactive Archive with filtering */}
         <CollectionArchive 
           posts={posts} 
           categories={allCategories}
