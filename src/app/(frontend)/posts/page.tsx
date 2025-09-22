@@ -83,6 +83,6 @@ export default async function Page() {
 
 export function generateMetadata(): Metadata {
   return {
-    title: `Bakorwil Malang Posts`,
+    title: `Bakorwil III Malang Website Posts`,
   }
 }
