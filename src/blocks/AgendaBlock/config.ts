@@ -10,12 +10,6 @@ export const AgendaBlock: Block = {
       defaultValue: 'Calendar',
     },
     {
-      name: 'showFilters',
-      type: 'checkbox',
-      defaultValue: true,
-      label: 'Show category filters',
-    },
-    {
       name: 'defaultView',
       type: 'select',
       defaultValue: 'month',
@@ -33,32 +27,6 @@ export const AgendaBlock: Block = {
           value: 'day',
         },
       ],
-    },
-    {
-      name: 'allowedCategories',
-      type: 'select',
-      hasMany: true,
-      options: [
-        {
-          label: 'Events',
-          value: 'events',
-        },
-        {
-          label: 'Classes',
-          value: 'classes',
-        },
-        {
-          label: 'Performances',
-          value: 'performances',
-        },
-        {
-          label: 'Workshops',
-          value: 'workshops',
-        },
-      ],
-      admin: {
-        description: 'Select which categories to show. Leave empty to show all.',
-      },
     },
     {
       name: 'showUpcoming',

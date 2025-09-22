@@ -947,12 +947,7 @@ export interface ServicesBlock {
  */
 export interface AgendaBlock {
   title?: string | null;
-  showFilters?: boolean | null;
   defaultView?: ('month' | 'week' | 'day') | null;
-  /**
-   * Select which categories to show. Leave empty to show all.
-   */
-  allowedCategories?: ('events' | 'classes' | 'performances' | 'workshops')[] | null;
   showUpcoming?: boolean | null;
   /**
    * Number of upcoming events to display
@@ -1009,7 +1004,6 @@ export interface Agenda {
   id: string;
   title: string;
   description?: string | null;
-  category: 'events' | 'classes' | 'performances' | 'workshops';
   startDate: string;
   endDate?: string | null;
   location?: string | null;
@@ -1486,9 +1480,7 @@ export interface ServicesBlockSelect<T extends boolean = true> {
  */
 export interface AgendaBlockSelect<T extends boolean = true> {
   title?: T;
-  showFilters?: T;
   defaultView?: T;
-  allowedCategories?: T;
   showUpcoming?: T;
   upcomingLimit?: T;
   id?: T;
@@ -1698,7 +1690,6 @@ export interface InternshipsSelect<T extends boolean = true> {
 export interface AgendaSelect<T extends boolean = true> {
   title?: T;
   description?: T;
-  category?: T;
   startDate?: T;
   endDate?: T;
   location?: T;

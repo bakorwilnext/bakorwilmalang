@@ -14,10 +14,9 @@ export const Agenda: CollectionConfig = {
     title: true,
     startDate: true,
     endDate: true,
-    category: true,
   },
   admin: {
-    defaultColumns: ['title', 'category', 'startDate', 'location', 'updatedAt'],
+    defaultColumns: ['title', 'startDate', 'location', 'updatedAt'],
     useAsTitle: 'title',
   },
   fields: [
@@ -35,30 +34,6 @@ export const Agenda: CollectionConfig = {
       admin: {
         placeholder: 'Event description...',
       },
-    },
-    {
-      name: 'category',
-      type: 'select',
-      required: true,
-      options: [
-        {
-          label: 'Events',
-          value: 'events',
-        },
-        {
-          label: 'Classes',
-          value: 'classes',
-        },
-        {
-          label: 'Performances',
-          value: 'performances',
-        },
-        {
-          label: 'Workshops',
-          value: 'workshops',
-        },
-      ],
-      defaultValue: 'events',
     },
     {
       name: 'startDate',
