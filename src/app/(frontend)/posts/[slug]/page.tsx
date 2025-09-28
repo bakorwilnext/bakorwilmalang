@@ -7,6 +7,7 @@ import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import RichText from '@/components/RichText'
+import { ShareButtons } from '@/components/ShareButtons/ShareButtons'
 
 import type { Post } from '@/payload-types'
 
@@ -14,6 +15,7 @@ import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { getServerSideURL } from '@/utilities/getURL'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -49,6 +51,11 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   if (!post) return <PayloadRedirects url={url} />
 
+  // Get the full URL for sharing
+  const baseUrl = getServerSideURL()
+  const fullUrl = `${baseUrl}/posts/${post.slug}`
+  const shareDescription = post.meta?.description || `Read "${post.title}" on our website.`
+
   return (
     <article className="pb-16">
       <PageClient />
@@ -63,6 +70,17 @@ export default async function Post({ params: paramsPromise }: Args) {
       <div className="flex flex-col items-center gap-4 pt-8">
         <div className="container">
           <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
+          
+          {/* Share buttons section */}
+          <div className="max-w-[48rem] mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+            <ShareButtons
+              title={post.title}
+              url={fullUrl}
+              description={shareDescription}
+              className="mb-8"
+            />
+          </div>
+
           {post.relatedPosts && post.relatedPosts.length > 0 && (
             <RelatedPosts
               className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"

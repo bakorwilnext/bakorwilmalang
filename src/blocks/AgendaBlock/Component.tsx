@@ -101,6 +101,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
+  // Updated to include Sunday
   const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
   const getActiveDaysInRange = (startDate: Date, endDate: Date) => {
@@ -163,7 +164,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
         day.setDate(startOfWeek.getDate() + i);
         days.push(day);
       }
-      return days.slice(0, 6); // Still return only 6 days for layout
+      return days; // Return all 7 days including Sunday
     }
     
     // Find the index of current date or closest date
@@ -174,7 +175,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
       for (let i = 0; i < activeDays.length; i++) {
         const activeDayStr = formatDateSafely(activeDays[i]);
         if (activeDayStr && activeDayStr >= currentDateStr) {
-          startIndex = Math.max(0, i - 2); // Show 2 days before current if possible
+          startIndex = Math.max(0, i - 3); // Show 3 days before current if possible
           break;
         }
       }
@@ -186,13 +187,13 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
           return dayStr && dayStr >= currentDateStr;
         });
         if (lastIndex === -1) {
-          startIndex = Math.max(0, activeDays.length - 6);
+          startIndex = Math.max(0, activeDays.length - 7);
         }
       }
     }
     
-    // Return up to 6 active days starting from startIndex
-    return activeDays.slice(startIndex, startIndex + 6);
+    // Return up to 7 active days starting from startIndex (including Sunday)
+    return activeDays.slice(startIndex, startIndex + 7);
   };
 
   const getEventsForDate = (date: Date) => {
@@ -239,7 +240,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
       currentIndex = activeDays.length - 1;
     }
     
-    const newIndex = Math.max(0, Math.min(activeDays.length - 1, currentIndex + (direction * 6)));
+    const newIndex = Math.max(0, Math.min(activeDays.length - 1, currentIndex + (direction * 7)));
     setCurrentDate(activeDays[newIndex] || currentDate);
   };
 
@@ -338,10 +339,10 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
             </div>
           </div>
 
-          {/* Week View */}
+          {/* Week View - Updated responsive grid to handle 7 days */}
           <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 lg:gap-6">
-              {Array.from({ length: 6 }).map((_, index) => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 lg:gap-6">
+              {Array.from({ length: 7 }).map((_, index) => {
                 const day = displayDays[index];
                 if (!day) {
                   // Empty slot to maintain grid layout
@@ -359,7 +360,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                 const events = getEventsForDate(day);
                 const isTodayDay = isToday(day);
                 const dayOfWeek = day.getDay();
-                const dayName = dayNames[dayOfWeek === 0 ? 6 : dayOfWeek - 1]; // Adjust for Sunday
+                const dayName = dayOfWeek === 0 ? 'SUN' : dayNames[dayOfWeek - 1];
                 
                 return (
                   <div key={index} className="min-h-[300px] lg:min-h-[400px]">
