@@ -23,7 +23,7 @@ export const Logo = (props: Props) => {
   const priority = priorityFromProps || 'low'
 
   // Default fallback logo
-  const defaultLogoSrc = "https://bakorwilmalang.jatimprov.go.id/wp-content/uploads/2024/07/cropped-BAKORWIL-logo-copy-1.png"
+  const defaultLogoSrc = "/BAKORWIL-logo-header.webp"
   
   // Use uploaded logo if available, otherwise fallback
   const logoSrc = logo?.url || defaultLogoSrc
