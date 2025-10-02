@@ -37,11 +37,6 @@ export async function Footer() {
                 title="Lokasi BAKORWIL III Malang"
               />
             </div>
-            
-            <div className="text-sm text-gray-300">
-              <p className="font-medium text-white">Badan Koordinasi Wilayah Pemerintahan dan Pembangunan</p>
-              <p className="mt-1">Lihat peta lebih besar</p>
-            </div>
           </div>
 
           {/* Contact Section */}

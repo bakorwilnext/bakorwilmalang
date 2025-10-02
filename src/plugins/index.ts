@@ -17,7 +17,7 @@ import { getServerSideURL } from '@/utilities/getURL'
 // import { linkPDFsToSubmission } from '@/hooks/LinkPDFsToSubmission'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
+  return doc?.title ? `${doc.title} | Situs Resmi Bakorwil III Malang` : 'Situs Resmi Bakorwil III Malang'
 }
 
 const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
