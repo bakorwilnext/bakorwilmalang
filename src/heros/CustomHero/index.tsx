@@ -12,7 +12,9 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
   const { setHeaderTheme } = useHeaderTheme()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoplay, setIsAutoplay] = useState(true)
+  const [isCarouselVisible, setIsCarouselVisible] = useState(false)
   const autoplayRef = useRef<NodeJS.Timeout | null>(null)
+  const carouselRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setHeaderTheme('dark')
@@ -32,8 +34,30 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
     setCurrentIndex(index)
   }
 
+  // Intersection Observer for lazy loading carousel
   useEffect(() => {
-    if (isAutoplay && carouselItems.length > 1) {
+    if (!carouselRef.current || carouselItems.length === 0) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsCarouselVisible(true)
+            observer.disconnect()
+          }
+        })
+      },
+      { rootMargin: '100px' } // Start loading 100px before visible
+    )
+
+    observer.observe(carouselRef.current)
+
+    return () => observer.disconnect()
+  }, [carouselItems.length])
+
+  // Autoplay effect
+  useEffect(() => {
+    if (isAutoplay && carouselItems.length > 1 && isCarouselVisible) {
       autoplayRef.current = setInterval(() => {
         nextSlide()
       }, 5000)
@@ -44,7 +68,7 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
         clearInterval(autoplayRef.current)
       }
     }
-  }, [isAutoplay, currentIndex, carouselItems.length])
+  }, [isAutoplay, currentIndex, carouselItems.length, isCarouselVisible])
 
   const handleMouseEnter = () => {
     setIsAutoplay(false)
@@ -54,20 +78,37 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
     setIsAutoplay(true)
   }
 
+  // Preload next image in carousel
+  useEffect(() => {
+    if (!isCarouselVisible || carouselItems.length <= 1) return
+
+    const nextIndex = (currentIndex + 1) % carouselItems.length
+    const nextItem = carouselItems[nextIndex]
+    
+    if (typeof nextItem === 'object' && nextItem !== null && 'url' in nextItem) {
+      const link = document.createElement('link')
+      link.rel = 'prefetch'
+      link.as = 'image'
+      link.href = nextItem.url as string
+      document.head.appendChild(link)
+    }
+  }, [currentIndex, carouselItems, isCarouselVisible])
+
   return (
     <div className="relative w-full overflow-visible" data-theme="dark">
-      {/* Hero Image Section */}
+      {/* Hero Image Section - Optimized for LCP */}
       <div className="relative w-full h-[60vh] overflow-hidden">
         {media && typeof media === 'object' && (
           <Media
             fill
-            priority
+            priority // Critical for LCP
             imgClassName="object-cover object-center"
             resource={media}
+            // fetchpriority is handled via priority prop which sets fetchpriority="high"
           />
         )}
         
-        {/* Overlay */}
+        {/* Overlay - Simplified */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/50" />
         
         {/* Hero Content */}
@@ -84,9 +125,10 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
         </div>
       </div>
 
-      {/* Carousel Section */}
+      {/* Carousel Section - Lazy loaded */}
       {carouselItems.length > 0 && (
         <div 
+          ref={carouselRef}
           className="relative w-full max-w-3xl mx-auto -mt-56 px-4 z-10"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -98,6 +140,7 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
                 className="absolute -left-5 bg-white/70 hover:bg-blue-500 text-gray-800 hover:text-white border-none rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-blue-500 dark:hover:text-white"
                 onClick={prevSlide}
                 aria-label="Previous slide"
+                type="button"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -105,8 +148,16 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
 
             {/* Carousel Track */}
             <div className="relative w-full h-64 overflow-hidden bg-transparent">
-              {carouselItems.map((item, index) => {
+              {isCarouselVisible && carouselItems.map((item, index) => {
                 if (typeof item === 'object' && item !== null) {
+                  // Only render current, previous, and next slides
+                  const isVisible = 
+                    index === currentIndex || 
+                    index === (currentIndex - 1 + carouselItems.length) % carouselItems.length ||
+                    index === (currentIndex + 1) % carouselItems.length
+
+                  if (!isVisible) return null
+
                   return (
                     <div
                       key={index}
@@ -118,6 +169,8 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
                           className="w-full h-full"
                           imgClassName="w-full h-full object-contain"
                           resource={item}
+                          // Carousel images are not LCP, so no priority
+                          priority={false}
                         />
                       </div>
                     </div>
@@ -133,6 +186,7 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
                 className="absolute -right-5 bg-white/70 hover:bg-blue-500 text-gray-800 hover:text-white border-none rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-blue-500 dark:hover:text-white"
                 onClick={nextSlide}
                 aria-label="Next slide"
+                type="button"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -152,6 +206,7 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
                   }`}
                   onClick={() => goToSlide(index)}
                   aria-label={`Go to slide ${index + 1}`}
+                  type="button"
                 />
               ))}
             </div>
