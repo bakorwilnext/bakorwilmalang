@@ -75,7 +75,7 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
     }
   }, [])
 
-  // Apply settings to DOM
+// Apply settings to DOM
   useEffect(() => {
     if (!canUseDOM) return
 
@@ -91,25 +91,25 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
     // Line height - apply to content areas
     root.style.setProperty('--accessibility-line-height', settings.lineHeight.toString())
 
-    // High contrast
+    // High contrast - apply to root instead of body to avoid filter issues
     if (settings.highContrast) {
-      body.classList.add('accessibility-high-contrast')
+      root.classList.add('accessibility-high-contrast')
     } else {
-      body.classList.remove('accessibility-high-contrast')
+      root.classList.remove('accessibility-high-contrast')
     }
 
     // Grayscale
     if (settings.grayscale) {
-      body.classList.add('accessibility-grayscale')
+      root.classList.add('accessibility-grayscale')
     } else {
-      body.classList.remove('accessibility-grayscale')
+      root.classList.remove('accessibility-grayscale')
     }
 
     // Invert colors
     if (settings.invertColors) {
-      body.classList.add('accessibility-invert')
+      root.classList.add('accessibility-invert')
     } else {
-      body.classList.remove('accessibility-invert')
+      root.classList.remove('accessibility-invert')
     }
 
     // Readable font
