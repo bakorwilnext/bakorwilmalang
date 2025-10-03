@@ -14,31 +14,31 @@ const AdminGuide: React.FC = () => {
       steps: [
         {
           title: 'Langkah 1: Buka Menu Posts',
-          content: 'Klik menu "Posts" di sidebar sebelah kiri. Di sini Anda akan melihat semua artikel yang sudah dibuat.',
+          content: 'Klik menu &quot;Posts&quot; di sidebar sebelah kiri. Di sini Anda akan melihat semua artikel yang sudah dibuat.',
         },
         {
           title: 'Langkah 2: Buat Artikel Baru',
-          content: 'Klik tombol "Create New" di pojok kanan atas untuk membuat artikel baru.',
+          content: 'Klik tombol &quot;Create New&quot; di pojok kanan atas untuk membuat artikel baru.',
         },
         {
           title: 'Langkah 3: Isi Judul Artikel',
-          content: 'Ketik judul artikel Anda di kolom "Title". Contoh: "Rapat Koordinasi Wilayah III Bulan Juni 2025"',
+          content: 'Ketik judul artikel Anda di kolom &quot;Title&quot;. Contoh: &quot;Rapat Koordinasi Wilayah III Bulan Juni 2025&quot;',
         },
         {
           title: 'Langkah 4: Tambahkan Gambar Utama',
-          content: 'Klik tab "Content", lalu klik "Choose from existing" atau "Upload new" untuk menambahkan gambar utama artikel. Gambar ini akan muncul di halaman artikel.',
+          content: 'Klik tab &quot;Content&quot;, lalu klik &quot;Choose from existing&quot; atau &quot;Upload new&quot; untuk menambahkan gambar utama artikel. Gambar ini akan muncul di halaman artikel.',
         },
         {
           title: 'Langkah 5: Tulis Isi Artikel',
-          content: 'Di kolom "Content", tulis isi artikel Anda. Anda bisa:\n• Membuat heading (judul bagian) dengan klik tombol H2, H3, H4\n• Membuat teks tebal dengan klik tombol B\n• Membuat teks miring dengan klik tombol I\n• Menambahkan gambar dengan klik tombol gambar\n• Membuat link dengan klik tombol rantai',
+          content: 'Di kolom &quot;Content&quot;, tulis isi artikel Anda. Anda bisa:\n• Membuat heading (judul bagian) dengan klik tombol H2, H3, H4\n• Membuat teks tebal dengan klik tombol B\n• Membuat teks miring dengan klik tombol I\n• Menambahkan gambar dengan klik tombol gambar\n• Membuat link dengan klik tombol rantai',
         },
         {
           title: 'Langkah 6: Pilih Kategori',
-          content: 'Klik tab "Meta", lalu pilih kategori artikel di kolom "Categories". Contoh: Berita, Pengumuman, Kegiatan, dll.',
+          content: 'Klik tab &quot;Meta&quot;, lalu pilih kategori artikel di kolom &quot;Categories&quot;. Contoh: Berita, Pengumuman, Kegiatan, dll.',
         },
         {
           title: 'Langkah 7: Simpan atau Publikasikan',
-          content: '• Klik "Save draft" untuk menyimpan tanpa dipublikasikan (hanya admin yang bisa lihat)\n• Klik "Publish" untuk mempublikasikan artikel (semua orang bisa lihat di website)',
+          content: '• Klik &quot;Save draft&quot; untuk menyimpan tanpa dipublikasikan (hanya admin yang bisa lihat)\n• Klik &quot;Publish&quot; untuk mempublikasikan artikel (semua orang bisa lihat di website)',
         },
       ],
       tips: [
@@ -55,31 +55,31 @@ const AdminGuide: React.FC = () => {
       steps: [
         {
           title: 'Langkah 1: Buka Menu Pages',
-          content: 'Klik menu "Pages" di sidebar kiri untuk melihat semua halaman website.',
+          content: 'Klik menu &quot;Pages&quot; di sidebar kiri untuk melihat semua halaman website.',
         },
         {
           title: 'Langkah 2: Edit Halaman yang Ada',
-          content: 'Klik nama halaman yang ingin diedit. Contoh: "Home" untuk mengedit halaman depan.',
+          content: 'Klik nama halaman yang ingin diedit. Contoh: &quot;Home&quot; untuk mengedit halaman depan.',
         },
         {
           title: 'Langkah 3: Edit Hero (Bagian Atas)',
-          content: 'Tab "Hero" adalah bagian paling atas halaman:\n• Isi "Rich Text" untuk teks utama\n• Upload gambar di "Media"\n• Pilih tipe tampilan di "Type" (Low Impact / High Impact)',
+          content: 'Tab &quot;Hero&quot; adalah bagian paling atas halaman:\n• Isi &quot;Rich Text&quot; untuk teks utama\n• Upload gambar di &quot;Media&quot;\n• Pilih tipe tampilan di &quot;Type&quot; (Low Impact / High Impact)',
         },
         {
           title: 'Langkah 4: Edit Konten Halaman',
-          content: 'Di tab "Content", Anda bisa menambahkan berbagai blok:\n• Content Block: Untuk teks dan gambar\n• Call To Action: Tombol ajakan (contoh: "Hubungi Kami")\n• Media Block: Untuk gambar atau video besar\n• Archive: Menampilkan daftar artikel\n• Form: Menampilkan formulir',
+          content: 'Di tab &quot;Content&quot;, Anda bisa menambahkan berbagai blok:\n• Content Block: Untuk teks dan gambar\n• Call To Action: Tombol ajakan (contoh: &quot;Hubungi Kami&quot;)\n• Media Block: Untuk gambar atau video besar\n• Archive: Menampilkan daftar artikel\n• Form: Menampilkan formulir',
         },
         {
           title: 'Langkah 5: Tambah Blok Baru',
-          content: 'Klik "+ Add Content", lalu pilih jenis blok yang ingin ditambahkan. Setiap blok punya fungsi berbeda sesuai kebutuhan.',
+          content: 'Klik &quot;+ Add Content&quot;, lalu pilih jenis blok yang ingin ditambahkan. Setiap blok punya fungsi berbeda sesuai kebutuhan.',
         },
         {
           title: 'Langkah 6: Atur SEO',
-          content: 'Di tab "SEO", isi:\n• Meta Title: Judul yang muncul di Google\n• Meta Description: Deskripsi singkat untuk Google\n• Meta Image: Gambar yang muncul saat dibagikan di media sosial',
+          content: 'Di tab &quot;SEO&quot;, isi:\n• Meta Title: Judul yang muncul di Google\n• Meta Description: Deskripsi singkat untuk Google\n• Meta Image: Gambar yang muncul saat dibagikan di media sosial',
         },
         {
           title: 'Langkah 7: Simpan Perubahan',
-          content: 'Klik "Save" untuk menyimpan perubahan, atau "Publish" jika ada perubahan yang perlu dipublikasikan.',
+          content: 'Klik &quot;Save&quot; untuk menyimpan perubahan, atau &quot;Publish&quot; jika ada perubahan yang perlu dipublikasikan.',
         },
       ],
       tips: [
@@ -96,35 +96,35 @@ const AdminGuide: React.FC = () => {
       steps: [
         {
           title: 'Langkah 1: Buka Menu Forms',
-          content: 'Klik menu "Forms" di sidebar kiri untuk melihat semua formulir yang tersedia.',
+          content: 'Klik menu &quot;Forms&quot; di sidebar kiri untuk melihat semua formulir yang tersedia.',
         },
         {
           title: 'Langkah 2: Buat Formulir Baru',
-          content: 'Klik "Create New" untuk membuat formulir baru. Beri nama formulir, contoh: "Formulir Pengaduan" atau "Formulir Kontak".',
+          content: 'Klik &quot;Create New&quot; untuk membuat formulir baru. Beri nama formulir, contoh: &quot;Formulir Pengaduan&quot; atau &quot;Formulir Kontak&quot;.',
         },
         {
           title: 'Langkah 3: Tambah Kolom Formulir',
-          content: 'Klik "+ Add Field" untuk menambah kolom input. Pilih tipe field:\n• Text: Input teks pendek (nama, email, dll)\n• Textarea: Input teks panjang (pesan, keterangan)\n• Email: Khusus untuk email\n• Number: Khusus untuk angka\n• Select: Pilihan dropdown\n• Checkbox: Kotak centang',
+          content: 'Klik &quot;+ Add Field&quot; untuk menambah kolom input. Pilih tipe field:\n• Text: Input teks pendek (nama, email, dll)\n• Textarea: Input teks panjang (pesan, keterangan)\n• Email: Khusus untuk email\n• Number: Khusus untuk angka\n• Select: Pilihan dropdown\n• Checkbox: Kotak centang',
         },
         {
           title: 'Langkah 4: Atur Setiap Kolom',
-          content: 'Untuk setiap field yang ditambahkan:\n• Name: Nama field (tanpa spasi, contoh: namaLengkap)\n• Label: Label yang terlihat user (contoh: Nama Lengkap)\n• Required: Centang jika wajib diisi\n• Placeholder: Teks petunjuk (contoh: "Masukkan nama Anda")',
+          content: 'Untuk setiap field yang ditambahkan:\n• Name: Nama field (tanpa spasi, contoh: namaLengkap)\n• Label: Label yang terlihat user (contoh: Nama Lengkap)\n• Required: Centang jika wajib diisi\n• Placeholder: Teks petunjuk (contoh: &quot;Masukkan nama Anda&quot;)',
         },
         {
           title: 'Langkah 5: Atur Email Pemberitahuan',
-          content: 'Di bagian "Emails", atur:\n• Email To: Email penerima notifikasi saat ada pengiriman form\n• Email From: Email pengirim\n• Subject: Judul email\n• Message: Isi email pemberitahuan',
+          content: 'Di bagian &quot;Emails&quot;, atur:\n• Email To: Email penerima notifikasi saat ada pengiriman form\n• Email From: Email pengirim\n• Subject: Judul email\n• Message: Isi email pemberitahuan',
         },
         {
           title: 'Langkah 6: Atur Pesan Konfirmasi',
-          content: 'Di "Confirmation":\n• Type: Pilih "Message" untuk pesan sukses\n• Message: Tulis pesan terima kasih, contoh: "Terima kasih! Formulir Anda telah dikirim."',
+          content: 'Di &quot;Confirmation&quot;:\n• Type: Pilih &quot;Message&quot; untuk pesan sukses\n• Message: Tulis pesan terima kasih, contoh: &quot;Terima kasih! Formulir Anda telah dikirim.&quot;',
         },
         {
           title: 'Langkah 7: Tampilkan di Halaman',
-          content: 'Setelah form jadi:\n1. Buka menu "Pages"\n2. Edit halaman yang ingin ditambahkan form\n3. Di tab "Content", klik "+ Add Content"\n4. Pilih "Form Block"\n5. Pilih form yang sudah dibuat\n6. Save dan Publish',
+          content: 'Setelah form jadi:\n1. Buka menu &quot;Pages&quot;\n2. Edit halaman yang ingin ditambahkan form\n3. Di tab &quot;Content&quot;, klik &quot;+ Add Content&quot;\n4. Pilih &quot;Form Block&quot;\n5. Pilih form yang sudah dibuat\n6. Save dan Publish',
         },
         {
           title: 'Langkah 8: Lihat Data Masuk',
-          content: 'Untuk melihat data yang dikirim:\n• Klik menu "Form Submissions" di sidebar\n• Pilih form yang ingin dilihat\n• Lihat semua data yang masuk\n• Klik detail untuk melihat isi lengkap',
+          content: 'Untuk melihat data yang dikirim:\n• Klik menu &quot;Form Submissions&quot; di sidebar\n• Pilih form yang ingin dilihat\n• Lihat semua data yang masuk\n• Klik detail untuk melihat isi lengkap',
         },
       ],
       tips: [
@@ -142,11 +142,11 @@ const AdminGuide: React.FC = () => {
       steps: [
         {
           title: 'Langkah 1: Buka Menu Media',
-          content: 'Klik menu "Media" di sidebar kiri untuk melihat semua file yang sudah diupload.',
+          content: 'Klik menu &quot;Media&quot; di sidebar kiri untuk melihat semua file yang sudah diupload.',
         },
         {
           title: 'Langkah 2: Upload File Baru',
-          content: 'Klik "Upload" di pojok kanan atas. Pilih file dari komputer Anda:\n• Gambar: JPG, PNG, WebP\n• Dokumen: PDF\n• Ukuran maksimal: 10MB per file',
+          content: 'Klik &quot;Upload&quot; di pojok kanan atas. Pilih file dari komputer Anda:\n• Gambar: JPG, PNG, WebP\n• Dokumen: PDF\n• Ukuran maksimal: 10MB per file',
         },
         {
           title: 'Langkah 3: Isi Informasi File',
@@ -154,7 +154,7 @@ const AdminGuide: React.FC = () => {
         },
         {
           title: 'Langkah 4: Gunakan Gambar',
-          content: 'Untuk menggunakan gambar yang sudah diupload:\n1. Saat membuat artikel/halaman\n2. Klik tombol upload gambar\n3. Pilih "Choose from existing"\n4. Cari dan pilih gambar yang diinginkan',
+          content: 'Untuk menggunakan gambar yang sudah diupload:\n1. Saat membuat artikel/halaman\n2. Klik tombol upload gambar\n3. Pilih &quot;Choose from existing&quot;\n4. Cari dan pilih gambar yang diinginkan',
         },
         {
           title: 'Langkah 5: Edit atau Hapus',
@@ -176,23 +176,23 @@ const AdminGuide: React.FC = () => {
       steps: [
         {
           title: 'Langkah 1: Buka Menu Categories',
-          content: 'Klik menu "Categories" di sidebar kiri untuk melihat semua kategori artikel.',
+          content: 'Klik menu &quot;Categories&quot; di sidebar kiri untuk melihat semua kategori artikel.',
         },
         {
           title: 'Langkah 2: Buat Kategori Baru',
-          content: 'Klik "Create New" untuk membuat kategori baru. Contoh kategori:\n• Berita\n• Pengumuman\n• Kegiatan\n• Laporan\n• Agenda',
+          content: 'Klik &quot;Create New&quot; untuk membuat kategori baru. Contoh kategori:\n• Berita\n• Pengumuman\n• Kegiatan\n• Laporan\n• Agenda',
         },
         {
           title: 'Langkah 3: Isi Nama Kategori',
-          content: 'Ketik nama kategori di kolom "Title". Nama harus jelas dan mudah dipahami.',
+          content: 'Ketik nama kategori di kolom &quot;Title&quot;. Nama harus jelas dan mudah dipahami.',
         },
         {
           title: 'Langkah 4: Slug Otomatis',
-          content: 'Slug (URL) akan otomatis dibuat dari judul. Contoh:\n• Judul: "Pengumuman Penting"\n• Slug: pengumuman-penting',
+          content: 'Slug (URL) akan otomatis dibuat dari judul. Contoh:\n• Judul: &quot;Pengumuman Penting&quot;\n• Slug: pengumuman-penting',
         },
         {
           title: 'Langkah 5: Gunakan Kategori',
-          content: 'Saat membuat artikel:\n1. Buka tab "Meta"\n2. Pilih kategori di kolom "Categories"\n3. Bisa pilih lebih dari satu kategori',
+          content: 'Saat membuat artikel:\n1. Buka tab &quot;Meta&quot;\n2. Pilih kategori di kolom &quot;Categories&quot;\n3. Bisa pilih lebih dari satu kategori',
         },
       ],
       tips: [
@@ -213,11 +213,11 @@ const AdminGuide: React.FC = () => {
         },
         {
           title: 'Live Preview',
-          content: 'Gunakan tombol "Live Preview" di pojok kanan atas untuk melihat tampilan artikel/halaman sebelum dipublikasi.',
+          content: 'Gunakan tombol &quot;Live Preview&quot; di pojok kanan atas untuk melihat tampilan artikel/halaman sebelum dipublikasi.',
         },
         {
           title: 'Auto Save',
-          content: 'Sistem akan otomatis menyimpan perubahan Anda setiap beberapa detik. Lihat status "Saving..." atau "Saved" di atas.',
+          content: 'Sistem akan otomatis menyimpan perubahan Anda setiap beberapa detik. Lihat status &quot;Saving...&quot; atau &quot;Saved&quot; di atas.',
         },
         {
           title: 'Search & Filter',
@@ -225,11 +225,11 @@ const AdminGuide: React.FC = () => {
         },
         {
           title: 'Versi & Draft',
-          content: 'Sistem menyimpan versi lama artikel Anda. Klik "Versions" untuk melihat dan restore versi sebelumnya jika diperlukan.',
+          content: 'Sistem menyimpan versi lama artikel Anda. Klik &quot;Versions&quot; untuk melihat dan restore versi sebelumnya jika diperlukan.',
         },
         {
           title: 'Penjadwalan Publikasi',
-          content: 'Anda bisa menjadwalkan artikel untuk dipublikasi nanti:\n1. Pilih status "Draft"\n2. Klik "Schedule Publish"\n3. Pilih tanggal dan waktu\n4. Save',
+          content: 'Anda bisa menjadwalkan artikel untuk dipublikasi nanti:\n1. Pilih status &quot;Draft&quot;\n2. Klik &quot;Schedule Publish&quot;\n3. Pilih tanggal dan waktu\n4. Save',
         },
         {
           title: 'Keyboard Shortcuts',

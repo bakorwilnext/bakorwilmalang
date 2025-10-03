@@ -3,7 +3,7 @@
 import { Banner } from '@payloadcms/ui/elements/Banner'
 import React, { useState } from 'react'
 
-import { SeedButton } from './SeedButton'
+//import { SeedButton } from './SeedButton'
 import AdminGuide from '../AdminGuide'
 import './index.scss'
 
@@ -56,11 +56,11 @@ const BeforeDashboard: React.FC = () => {
           <div className={`${baseClass}__help-box`}>
             <h5>💡 Tips Cepat:</h5>
             <ul>
-              <li>Gunakan tombol <strong>"Live Preview"</strong> untuk melihat tampilan sebelum publish</li>
-              <li>Klik tombol <strong>"Save draft"</strong> untuk menyimpan tanpa publish</li>
-              <li>Klik tombol <strong>"Publish"</strong> untuk mempublikasikan ke website</li>
+              <li>Gunakan tombol <strong>&quot;Live Preview&quot;</strong> untuk melihat tampilan sebelum publish</li>
+              <li>Klik tombol <strong>&quot;Save draft&quot;</strong> untuk menyimpan tanpa publish</li>
+              <li>Klik tombol <strong>&quot;Publish&quot;</strong> untuk mempublikasikan ke website</li>
               <li>Sistem akan otomatis menyimpan perubahan Anda setiap beberapa detik</li>
-              <li>Klik tombol <strong>"📚 Lihat Panduan Lengkap"</strong> di atas untuk tutorial detail</li>
+              <li>Klik tombol <strong>&quot;📚 Lihat Panduan Lengkap&quot;</strong> di atas untuk tutorial detail</li>
             </ul>
           </div>
 
