@@ -30,10 +30,14 @@ export const generateMeta = async (args: {
     ? doc?.meta?.title + ' | Situs Resmi Bakorwil III Malang'
     : 'Situs Resmi Bakorwil III Malang'
 
+  const defaultDescription = 'Selamat datang di Situs Resmi Badan Koordinasi Wilayah Pemerintahan dan Pembangunan III Provinsi Jawa Timur di Malang (Bakorwil III Malang)'
+
+  const description = doc?.meta?.description || defaultDescription
+
   return {
-    description: doc?.meta?.description,
+    description,
     openGraph: mergeOpenGraph({
-      description: doc?.meta?.description || '',
+      description,
       images: ogImage
         ? [
             {
