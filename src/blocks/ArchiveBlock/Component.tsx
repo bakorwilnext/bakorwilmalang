@@ -76,9 +76,9 @@ export const ArchiveBlock: React.FC<
       <div className="container mx-auto px-4">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             Artikel
-          </h1>
+          </h2>
           {introContent && (
             <div className="max-w-3xl mx-auto">
               <RichText 

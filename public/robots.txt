@@ -1,0 +1,26 @@
+
+User-agent: *
+Allow: /
+Allow: /posts
+Allow: /posts/*
+Allow: /search
+
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/
+Disallow: /api/*
+
+Disallow: /next/preview
+Disallow: /next/exit-preview
+Disallow: /next/seed
+
+Disallow: /*?draft=true
+
+Allow: /media/
+Allow: /pdfs/
+
+Crawl-delay: 1
+
+Sitemap: https://bakorwilmalang.vercel.app/sitemap.xml
+Sitemap: https://bakorwilmalang.vercel.app/pages-sitemap.xml
+Sitemap: https://bakorwilmalang.vercel.app/posts-sitemap.xml
