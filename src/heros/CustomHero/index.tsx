@@ -181,19 +181,23 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
           </div>
 
           {carouselItems.length > 1 && (
-            <div className="flex justify-center gap-2 mt-4">
+            <div className="flex justify-center gap-1 mt-4">
               {carouselItems.map((_, index) => (
                 <button
                   key={index}
-                  className={`w-2.5 h-2.5 rounded-full border-none p-0 cursor-pointer transition-all duration-300 ${
-                    index === currentIndex
-                      ? 'bg-blue-500 scale-110'
-                      : 'bg-gray-300 dark:bg-gray-600'
-                  }`}
+                  className="min-w-12 min-h-12 p-0 border-none cursor-pointer transition-all duration-300 flex items-center justify-center"
                   onClick={() => goToSlide(index)}
                   aria-label={`Go to slide ${index + 1}`}
                   type="button"
-                />
+                >
+                  <span
+                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                      index === currentIndex
+                        ? 'bg-blue-500 scale-110'
+                        : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  />
+                </button>
               ))}
             </div>
           )}

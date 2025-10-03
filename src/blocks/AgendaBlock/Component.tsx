@@ -333,9 +333,9 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
               </div>
 
               {/* Title */}
-              <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center lg:text-left">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center lg:text-left">
                 {title}
-              </h1>
+              </h2>
             </div>
           </div>
 
@@ -349,7 +349,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                   return (
                     <div key={index} className="min-h-[300px] lg:min-h-[400px]">
                       <div className="text-center py-8">
-                        <div className="text-gray-300 dark:text-gray-600 text-sm">
+                        <div className="text-gray-700 dark:text-gray-600 text-sm">
                           No events
                         </div>
                       </div>

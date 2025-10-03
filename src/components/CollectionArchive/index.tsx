@@ -242,7 +242,7 @@ export const CollectionArchive: React.FC<CollectionArchiveProps> = ({
 
       {/* Results Count */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-gray-700">
           {filteredPosts.length === initialPosts.length
             ? `${filteredPosts.length} articles`
             : `${filteredPosts.length} of ${initialPosts.length} articles`}

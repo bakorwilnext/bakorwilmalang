@@ -65,7 +65,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
 
   return (
     <div {...(theme ? { 'data-theme': theme } : {})}>
-      <div className="bg-cyan-500 text-white py-2 px-4 relative z-40">
+      <div className="bg-cyan-500 text-black py-2 px-4 relative z-40">
         <div className="container mx-auto flex justify-between items-center text-sm">
           <div className="flex items-center gap-4">
             {isClient && currentTime ? (
