@@ -386,7 +386,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                     <div className="space-y-3">
                       {events.length === 0 ? (
                         <div className="text-center py-8">
-                          <div className="text-gray-400 dark:text-gray-500 text-sm">
+                          <div className="text-gray-700 dark:text-gray-500 text-sm">
                             No events
                           </div>
                         </div>
