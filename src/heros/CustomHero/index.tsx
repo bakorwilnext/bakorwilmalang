@@ -34,7 +34,6 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
     setCurrentIndex(index)
   }
 
-  // Intersection Observer for lazy loading carousel
   useEffect(() => {
     if (!carouselRef.current || carouselItems.length === 0) return
 
@@ -47,7 +46,7 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
           }
         })
       },
-      { rootMargin: '100px' } // Start loading 100px before visible
+      { rootMargin: '100px' }
     )
 
     observer.observe(carouselRef.current)
@@ -55,7 +54,6 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
     return () => observer.disconnect()
   }, [carouselItems.length])
 
-  // Autoplay effect
   useEffect(() => {
     if (isAutoplay && carouselItems.length > 1 && isCarouselVisible) {
       autoplayRef.current = setInterval(() => {
@@ -78,7 +76,6 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
     setIsAutoplay(true)
   }
 
-  // Preload next image in carousel
   useEffect(() => {
     if (!isCarouselVisible || carouselItems.length <= 1) return
 
@@ -96,22 +93,18 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
 
   return (
     <div className="relative w-full overflow-visible" data-theme="dark">
-      {/* Hero Image Section - Optimized for LCP */}
       <div className="relative w-full h-[60vh] overflow-hidden">
         {media && typeof media === 'object' && (
           <Media
             fill
-            priority // Critical for LCP
+            priority
             imgClassName="object-cover object-center"
             resource={media}
-            // fetchpriority is handled via priority prop which sets fetchpriority="high"
           />
         )}
         
-        {/* Overlay - Simplified */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/50" />
         
-        {/* Hero Content */}
         <div className="absolute bottom-[60%] left-0 w-full px-8 text-center text-white">
           {richText && (
             <div className="max-w-4xl mx-auto">
@@ -125,7 +118,6 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
         </div>
       </div>
 
-      {/* Carousel Section - Lazy loaded */}
       {carouselItems.length > 0 && (
         <div 
           ref={carouselRef}
@@ -134,7 +126,6 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
           onMouseLeave={handleMouseLeave}
         >
           <div className="flex items-center justify-center relative w-full">
-            {/* Previous Button */}
             {carouselItems.length > 1 && (
               <button
                 className="absolute -left-5 bg-white/70 hover:bg-blue-500 text-gray-800 hover:text-white border-none rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-blue-500 dark:hover:text-white"
@@ -146,11 +137,9 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
               </button>
             )}
 
-            {/* Carousel Track */}
             <div className="relative w-full h-64 overflow-hidden bg-transparent">
               {isCarouselVisible && carouselItems.map((item, index) => {
                 if (typeof item === 'object' && item !== null) {
-                  // Only render current, previous, and next slides
                   const isVisible = 
                     index === currentIndex || 
                     index === (currentIndex - 1 + carouselItems.length) % carouselItems.length ||
@@ -169,7 +158,6 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
                           className="w-full h-full"
                           imgClassName="w-full h-full object-contain"
                           resource={item}
-                          // Carousel images are not LCP, so no priority
                           priority={false}
                         />
                       </div>
@@ -180,7 +168,6 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
               })}
             </div>
 
-            {/* Next Button */}
             {carouselItems.length > 1 && (
               <button
                 className="absolute -right-5 bg-white/70 hover:bg-blue-500 text-gray-800 hover:text-white border-none rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-blue-500 dark:hover:text-white"
@@ -193,7 +180,6 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
             )}
           </div>
 
-          {/* Indicators */}
           {carouselItems.length > 1 && (
             <div className="flex justify-center gap-2 mt-4">
               {carouselItems.map((_, index) => (
