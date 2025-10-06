@@ -8,6 +8,7 @@ import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import RichText from '@/components/RichText'
 import { ShareButtons } from '@/components/ShareButtons/ShareButtons'
+import { ViewCounter } from '@/components/ViewCounter'
 
 import type { Post } from '@/payload-types'
 
@@ -51,7 +52,7 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   if (!post) return <PayloadRedirects url={url} />
 
-  // Get the full URL for sharing
+  // full URL for sharing
   const baseUrl = getServerSideURL()
   const fullUrl = `${baseUrl}/posts/${post.slug}`
   const shareDescription = post.meta?.description || `Read "${post.title}" on our website.`
@@ -60,7 +61,6 @@ export default async function Post({ params: paramsPromise }: Args) {
     <article className="pb-16">
       <PageClient />
 
-      {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
       {draft && <LivePreviewListener />}
@@ -70,15 +70,23 @@ export default async function Post({ params: paramsPromise }: Args) {
       <div className="flex flex-col items-center gap-4 pt-8">
         <div className="container">
           <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
+
+          <ViewCounter 
+            slug={post.slug || ''} 
+            initialViews={typeof post.viewCount === 'number' ? post.viewCount : 0}
+            className="mt-4 max-w-[48rem] mx-auto"
+          />
           
-          {/* Share buttons section */}
+          {/* Share buttons and view counter section */}
           <div className="max-w-[48rem] mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
             <ShareButtons
               title={post.title}
               url={fullUrl}
               description={shareDescription}
-              className="mb-8"
+              className="mb-6"
             />
+            
+
           </div>
 
           {post.relatedPosts && post.relatedPosts.length > 0 && (

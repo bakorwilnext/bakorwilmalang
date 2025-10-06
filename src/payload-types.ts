@@ -268,6 +268,10 @@ export interface Post {
     | null;
   slug?: string | null;
   slugLock?: boolean | null;
+  /**
+   * Number of times this post has been viewed
+   */
+  viewCount?: number | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1513,6 +1517,7 @@ export interface PostsSelect<T extends boolean = true> {
       };
   slug?: T;
   slugLock?: T;
+  viewCount?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

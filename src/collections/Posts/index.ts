@@ -221,6 +221,16 @@ export const Posts: CollectionConfig<'posts'> = {
       ],
     },
     ...slugField(),
+    {
+      name: 'viewCount',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        position: 'sidebar',
+        description: 'Number of times this post has been viewed',
+        readOnly: true,
+      },
+    },
   ],
   hooks: {
     afterChange: [revalidatePost],
