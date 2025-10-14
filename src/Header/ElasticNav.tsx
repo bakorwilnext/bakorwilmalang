@@ -50,7 +50,9 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const handleDropdownToggle = (index: number) => {
+  const handleDropdownToggle = (index: number, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
     setOpenDropdown(openDropdown === index ? null : index)
   }
 
@@ -81,18 +83,27 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
                     className="relative"
                     ref={setDropdownRef(i)}
                   >
-                    <button
-                      onClick={() => handleDropdownToggle(i)}
-                      className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white hover:text-cyan-400 transition-colors uppercase tracking-wider"
-                      aria-expanded={openDropdown === i}
-                    >
-                      {link.label}
-                      <ChevronDown 
-                        className={`w-4 h-4 transition-transform duration-300 ${
-                          openDropdown === i ? 'rotate-180' : ''
-                        }`} 
-                      />
-                    </button>
+                    <div className="flex items-center gap-0.5">
+                      <div onClick={() => setOpenDropdown(null)}>
+                        <CMSLink 
+                          {...link}
+                          appearance="link" 
+                          className="px-3 py-2 text-sm font-medium text-white hover:text-cyan-400 transition-colors uppercase tracking-wider"
+                        />
+                      </div>
+                      <button
+                        onClick={(e) => handleDropdownToggle(i, e)}
+                        className="p-1 text-white hover:text-cyan-400 transition-colors"
+                        aria-expanded={openDropdown === i}
+                        aria-label={`Toggle ${link.label} dropdown`}
+                      >
+                        <ChevronDown 
+                          className={`w-4 h-4 transition-transform duration-300 ${
+                            openDropdown === i ? 'rotate-180' : ''
+                          }`} 
+                        />
+                      </button>
+                    </div>
                     
                     {openDropdown === i && (
                       <div className="absolute top-full left-0 mt-1 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 animate-in fade-in-0 zoom-in-95 duration-200">

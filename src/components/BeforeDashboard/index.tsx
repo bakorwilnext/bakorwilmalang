@@ -3,7 +3,7 @@
 import { Banner } from '@payloadcms/ui/elements/Banner'
 import React, { useState } from 'react'
 
-//import { SeedButton } from './SeedButton'
+import { SeedButton } from './SeedButton'
 import AdminGuide from '../AdminGuide'
 import './index.scss'
 
@@ -34,10 +34,10 @@ const BeforeDashboard: React.FC = () => {
           <div className={`${baseClass}__intro`}>
             <h5>Langkah Awal:</h5>
             <ul className={`${baseClass}__instructions`}>
-              {/* <li>
+              <li>
                 <strong>Seed Database:</strong> <SeedButton />
                 {' dengan contoh halaman, artikel, dan konten lainnya untuk memulai website Anda.'}
-              </li> */}
+              </li>
               <li>
                 <strong>Buat Artikel:</strong> Klik menu <strong>Posts</strong> di sidebar kiri untuk membuat artikel/berita baru.
               </li>
