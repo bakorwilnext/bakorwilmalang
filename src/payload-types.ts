@@ -1012,6 +1012,10 @@ export interface Agenda {
   endDate?: string | null;
   location?: string | null;
   instructor?: string | null;
+  /**
+   * Optional color for event display
+   */
+  color?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1699,6 +1703,7 @@ export interface AgendaSelect<T extends boolean = true> {
   endDate?: T;
   location?: T;
   instructor?: T;
+  color?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

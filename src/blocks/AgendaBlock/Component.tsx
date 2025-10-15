@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, MapPin, User, Clock } from 'lucide-react';
 
 interface AgendaItem {
@@ -11,10 +11,7 @@ interface AgendaItem {
   endDate?: string;
   location?: string;
   instructor?: string;
-  isAllDay: boolean;
-  isRecurring: boolean;
-  recurringPattern?: 'daily' | 'weekly' | 'monthly';
-  color: string;
+  color?: string;
 }
 
 interface AgendaBlockProps {
@@ -38,258 +35,176 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
   const [selectedEvent, setSelectedEvent] = useState<AgendaItem | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  // Helper function to validate and create safe dates
-  const createSafeDate = (dateInput: string | Date): Date | null => {
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
+  // Optimized date utilities
+  const createSafeDate = useCallback((dateInput: string | Date): Date | null => {
     try {
       if (!dateInput) return null;
-      
       const date = new Date(dateInput);
-      
-      // Check if the date is valid
-      if (isNaN(date.getTime())) {
-        console.warn('Invalid date encountered:', dateInput);
-        return null;
-      }
-      
-      return date;
-    } catch (error) {
-      console.error('Error creating date:', error, dateInput);
+      return isNaN(date.getTime()) ? null : date;
+    } catch {
       return null;
     }
-  };
+  }, []);
 
-  // Helper function to format date safely
-  const formatDateSafely = (date: Date): string => {
-    try {
-      return date.toISOString().split('T')[0];
-    } catch (error) {
-      console.error('Error formatting date:', error, date);
-      return '';
-    }
-  };
+  const formatDateKey = useCallback((date: Date): string => {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }, []);
 
+  // Fetch agenda items with better error handling
   useEffect(() => {
-    // Fetch agenda items from API
+    let mounted = true;
+    
     const fetchAgendaItems = async () => {
-      setLoading(true);
       try {
-        const response = await fetch('/api/agenda');
+        const response = await fetch('/api/agenda?limit=1000&depth=0', {
+          next: { revalidate: 60 }
+        });
+        
+        if (!mounted) return;
+        
         if (response.ok) {
           const data = await response.json();
-          // Filter out items with invalid dates
-          const validItems = (data.docs || []).filter((item: AgendaItem) => {
-            const startDate = createSafeDate(item.startDate);
-            return startDate !== null;
-          });
+          const validItems = (data.docs || [])
+            .filter((item: AgendaItem) => createSafeDate(item.startDate))
+            .sort((a: AgendaItem, b: AgendaItem) => 
+              new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+            );
           setAgendaItems(validItems);
-        } else {
-          setAgendaItems([]);
         }
       } catch (error) {
-        console.error('Failed to fetch agenda items:', error);
-        setAgendaItems([]);
+        console.error('Failed to fetch agenda:', error);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     fetchAgendaItems();
-  }, []);
+    return () => { mounted = false; };
+  }, [createSafeDate]);
 
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-
-  // Updated to include Sunday
-  const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-
-  const getActiveDaysInRange = (startDate: Date, endDate: Date) => {
-    const activeDays: Date[] = [];
-    const seenDates = new Set<string>();
+  // Memoized events by date map for O(1) lookup
+  const eventsByDate = useMemo(() => {
+    const map = new Map<string, AgendaItem[]>();
     
-    // Get all days that have events
     agendaItems.forEach(item => {
-      const eventDate = createSafeDate(item.startDate);
+      const date = createSafeDate(item.startDate);
+      if (!date) return;
       
-      // Skip invalid dates
-      if (!eventDate) {
-        console.warn('Skipping item with invalid startDate:', item.title, item.startDate);
-        return;
-      }
-      
-      // Normalize to local date without time zone issues
-      const localEventDate = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-      const eventDateStr = formatDateSafely(localEventDate);
-      
-      // Skip if we couldn't format the date
-      if (!eventDateStr) return;
-      
-      // Check if this event date falls within our range
-      if (localEventDate >= startDate && localEventDate <= endDate) {
-        // Check if we already have this date using Set for better performance
-        if (!seenDates.has(eventDateStr)) {
-          seenDates.add(eventDateStr);
-          activeDays.push(localEventDate);
-        }
-      }
+      const key = formatDateKey(date);
+      const existing = map.get(key) || [];
+      map.set(key, [...existing, item]);
     });
     
-    // Sort by date
-    activeDays.sort((a, b) => a.getTime() - b.getTime());
-    
-    return activeDays;
-  };
+    return map;
+  }, [agendaItems, createSafeDate, formatDateKey]);
 
-  const getDisplayDays = () => {
-    // Get a wider range to find active days
-    const rangeStart = new Date(currentDate);
-    rangeStart.setDate(currentDate.getDate() - 60); // Look 60 days back
-    
-    const rangeEnd = new Date(currentDate);
-    rangeEnd.setDate(currentDate.getDate() + 60); // Look 60 days forward
-    
-    const activeDays = getActiveDaysInRange(rangeStart, rangeEnd);
-    
+  // Memoized sorted active days
+  const activeDays = useMemo(() => {
+    return Array.from(eventsByDate.keys())
+      .map(key => {
+        const [year, month, day] = key.split('-').map(Number);
+        return new Date(year, month - 1, day);
+      })
+      .sort((a, b) => a.getTime() - b.getTime());
+  }, [eventsByDate]);
+
+  // Get display days efficiently
+  const displayDays = useMemo(() => {
     if (activeDays.length === 0) {
-      // If no active days, show current week including all 7 days
+      // Show current week when no events
       const startOfWeek = new Date(currentDate);
       const dayOfWeek = startOfWeek.getDay();
       const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
       startOfWeek.setDate(startOfWeek.getDate() + diffToMonday);
       
-      const days = [];
-      for (let i = 0; i < 7; i++) {
+      return Array.from({ length: 7 }, (_, i) => {
         const day = new Date(startOfWeek);
         day.setDate(startOfWeek.getDate() + i);
-        days.push(day);
-      }
-      return days; // Return all 7 days including Sunday
+        return day;
+      });
     }
     
-    // Find the index of current date or closest date
-    let startIndex = 0;
-    const currentDateStr = formatDateSafely(currentDate);
+    // Find start index based on current date
+    const currentDateStr = formatDateKey(currentDate);
+    let startIndex = activeDays.findIndex(day => formatDateKey(day) >= currentDateStr);
     
-    if (currentDateStr) {
-      for (let i = 0; i < activeDays.length; i++) {
-        const activeDayStr = formatDateSafely(activeDays[i]);
-        if (activeDayStr && activeDayStr >= currentDateStr) {
-          startIndex = Math.max(0, i - 3); // Show 3 days before current if possible
-          break;
-        }
-      }
-      
-      // If we didn't find a date >= current date, start from the end
-      if (startIndex === 0 && activeDays.length > 0) {
-        const lastIndex = activeDays.findIndex(day => {
-          const dayStr = formatDateSafely(day);
-          return dayStr && dayStr >= currentDateStr;
-        });
-        if (lastIndex === -1) {
-          startIndex = Math.max(0, activeDays.length - 7);
-        }
-      }
+    if (startIndex === -1) {
+      startIndex = Math.max(0, activeDays.length - 7);
+    } else {
+      startIndex = Math.max(0, startIndex - 3);
     }
     
-    // Return up to 7 active days starting from startIndex (including Sunday)
     return activeDays.slice(startIndex, startIndex + 7);
-  };
+  }, [activeDays, currentDate, formatDateKey]);
 
-  const getEventsForDate = (date: Date) => {
-    // Normalize the input date to avoid timezone issues
-    const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const dateStr = formatDateSafely(targetDate);
-    
-    if (!dateStr) return [];
-    
-    return agendaItems.filter(item => {
-      const eventDate = createSafeDate(item.startDate);
-      if (!eventDate) return false;
-      
-      // Normalize event date to local date
-      const localEventDate = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-      const itemDateStr = formatDateSafely(localEventDate);
-      return itemDateStr === dateStr;
-    });
-  };
+  // Get events for date - now O(1) with map lookup
+  const getEventsForDate = useCallback((date: Date) => {
+    const key = formatDateKey(date);
+    return eventsByDate.get(key) || [];
+  }, [eventsByDate, formatDateKey]);
 
-  const navigateWeek = (direction: number) => {
-    const activeDays = getActiveDaysInRange(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1),
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0)
-    );
-    
+  // Navigate week
+  const navigateWeek = useCallback((direction: number) => {
     if (activeDays.length === 0) {
-      // Fallback to regular week navigation
       const newDate = new Date(currentDate);
       newDate.setDate(newDate.getDate() + (direction * 7));
       setCurrentDate(newDate);
       return;
     }
     
-    const currentDateStr = formatDateSafely(currentDate);
-    if (!currentDateStr) return;
+    const currentDateStr = formatDateKey(currentDate);
+    let currentIndex = activeDays.findIndex(day => formatDateKey(day) >= currentDateStr);
     
-    let currentIndex = activeDays.findIndex(day => {
-      const dayStr = formatDateSafely(day);
-      return dayStr && dayStr >= currentDateStr;
-    });
-    
-    if (currentIndex === -1) {
-      currentIndex = activeDays.length - 1;
-    }
+    if (currentIndex === -1) currentIndex = activeDays.length - 1;
     
     const newIndex = Math.max(0, Math.min(activeDays.length - 1, currentIndex + (direction * 7)));
     setCurrentDate(activeDays[newIndex] || currentDate);
-  };
+  }, [activeDays, currentDate, formatDateKey]);
 
-  const isToday = (date: Date) => {
+  const isToday = useCallback((date: Date) => {
     const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
+    return formatDateKey(date) === formatDateKey(today);
+  }, [formatDateKey]);
 
-  const formatTime = (dateStr: string) => {
+  const formatTime = useCallback((dateStr: string) => {
     const date = createSafeDate(dateStr);
     if (!date) return 'Invalid time';
-    
     return date.toLocaleTimeString('en-US', { 
       hour: '2-digit', 
       minute: '2-digit',
       hour12: false 
     });
-  };
+  }, [createSafeDate]);
 
-  const handleEventClick = (event: AgendaItem) => {
+  const handleEventClick = useCallback((event: AgendaItem) => {
     setSelectedEvent(event);
     setShowModal(true);
-  };
+  }, []);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setShowModal(false);
     setSelectedEvent(null);
-  };
+  }, []);
 
-  const getDateRangeDisplay = () => {
-    const displayDays = getDisplayDays();
+  // Optimized date range display
+  const weekRange = useMemo(() => {
     if (displayDays.length === 0) {
-      return `${monthNames[currentDate.getMonth()].toUpperCase()}`;
+      return monthNames[currentDate.getMonth()].toUpperCase();
     }
 
     const startDay = displayDays[0];
     const endDay = displayDays[displayDays.length - 1];
 
-    // If all days are in the same month
     if (startDay.getMonth() === endDay.getMonth()) {
       return `${startDay.getDate()}-${endDay.getDate()} ${monthNames[startDay.getMonth()].toUpperCase()}`;
-    } else {
-      // If days span across different months
-      return `${startDay.getDate()} ${monthNames[startDay.getMonth()].substring(0, 3).toUpperCase()} - ${endDay.getDate()} ${monthNames[endDay.getMonth()].substring(0, 3).toUpperCase()}`;
     }
-  };
-
-  const displayDays = getDisplayDays();
-  const weekRange = getDateRangeDisplay();
+    
+    return `${startDay.getDate()} ${monthNames[startDay.getMonth()].substring(0, 3).toUpperCase()} - ${endDay.getDate()} ${monthNames[endDay.getMonth()].substring(0, 3).toUpperCase()}`;
+  }, [displayDays, currentDate, monthNames]);
 
   if (loading) {
     return (
@@ -320,7 +235,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                 >
                   <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 min-w-0">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 min-w-[120px] text-center">
                   {weekRange}
                 </span>
                 <button
@@ -332,38 +247,24 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                 </button>
               </div>
 
-              {/* Title */}
+              {/* Title - This is the configurable title */}
               <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center lg:text-left">
                 {title}
               </h2>
             </div>
           </div>
 
-          {/* Week View - Updated responsive grid to handle 7 days */}
+          {/* Week View */}
           <div className="p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 lg:gap-6">
-              {Array.from({ length: 7 }).map((_, index) => {
-                const day = displayDays[index];
-                if (!day) {
-                  // Empty slot to maintain grid layout
-                  return (
-                    <div key={index} className="min-h-[300px] lg:min-h-[400px]">
-                      <div className="text-center py-8">
-                        <div className="text-gray-700 dark:text-gray-600 text-sm">
-                          No events
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-
+              {displayDays.map((day, index) => {
                 const events = getEventsForDate(day);
                 const isTodayDay = isToday(day);
                 const dayOfWeek = day.getDay();
                 const dayName = dayOfWeek === 0 ? 'SUN' : dayNames[dayOfWeek - 1];
                 
                 return (
-                  <div key={index} className="min-h-[300px] lg:min-h-[400px]">
+                  <div key={formatDateKey(day)} className="min-h-[300px] lg:min-h-[400px]">
                     {/* Day Header */}
                     <div className="text-center mb-4 pb-3 border-b border-gray-100 dark:border-gray-700">
                       <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
@@ -376,7 +277,6 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                       }`}>
                         {day.getDate()}
                       </div>
-                      {/* Show month for every date */}
                       <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {monthNames[day.getMonth()].substring(0, 3).toUpperCase()}
                       </div>
@@ -386,22 +286,24 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                     <div className="space-y-3">
                       {events.length === 0 ? (
                         <div className="text-center py-8">
-                          <div className="text-gray-700 dark:text-gray-500 text-sm">
+                          <div className="text-gray-400 dark:text-gray-600 text-sm">
                             No events
                           </div>
                         </div>
                       ) : (
-                        events.map((event, eventIndex) => (
-                          <div
-                            key={eventIndex}
-                            className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 cursor-pointer group"
+                        events.map((event) => (
+                          <button
+                            key={event.id}
+                            className="w-full text-left bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 group"
                             onClick={() => handleEventClick(event)}
                           >
                             {/* Time */}
                             <div className="flex items-center text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                              <Clock className="w-4 h-4 mr-2 text-gray-500" />
-                              {formatTime(event.startDate)}
-                              {event.endDate && ` - ${formatTime(event.endDate)}`}
+                              <Clock className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
+                              <span className="truncate">
+                                {formatTime(event.startDate)}
+                                {event.endDate && ` - ${formatTime(event.endDate)}`}
+                              </span>
                             </div>
                             
                             {/* Title */}
@@ -431,7 +333,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                                 </div>
                               )}
                             </div>
-                          </div>
+                          </button>
                         ))
                       )}
                     </div>
@@ -445,15 +347,19 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
 
       {/* Event Detail Modal */}
       {showModal && selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={closeModal}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-3">
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                  Event Details
-                </h2>
-              </div>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                Event Details
+              </h2>
               <button
                 onClick={closeModal}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -465,9 +371,9 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
             
             {/* Modal Content */}
             <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4 leading-tight">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4 leading-tight">
                 {selectedEvent.title}
-              </h2>
+              </h3>
               
               {selectedEvent.description && (
                 <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
@@ -502,10 +408,8 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
                 {selectedEvent.location && (
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-gray-100">
-                        {selectedEvent.location}
-                      </div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">
+                      {selectedEvent.location}
                     </div>
                   </div>
                 )}
@@ -529,23 +433,12 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
             
             {/* Modal Footer */}
             <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-              <div className="flex gap-3">
-                <button
-                  onClick={closeModal}
-                  className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 py-3 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
-                >
-                  Close
-                </button>
-                <button
-                  onClick={() => {
-                    // Add to calendar functionality here
-                    closeModal();
-                  }}
-                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  Add to Calendar
-                </button>
-              </div>
+              <button
+                onClick={closeModal}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
