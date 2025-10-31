@@ -128,7 +128,6 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
         </div>
       </div>
 
-      {/* Navigation Bar - Sticky with higher z-index */}
       <div className="sticky top-0 z-50">
         <ElasticHeaderNav data={data} />
       </div>

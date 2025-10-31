@@ -42,7 +42,6 @@ export default async function Page() {
     <div className="pt-24 pb-24">
       <PageClient />
       
-      {/* Header Section - Consistent with Archive Block */}
       <div className="container mx-auto px-4 mb-16">
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -51,7 +50,6 @@ export default async function Page() {
         </div>
       </div>
 
-      {/* Page Range Info */}
       <div className="container mx-auto px-4 mb-8 text-center">
         <PageRange
           collection="posts"
@@ -61,7 +59,6 @@ export default async function Page() {
         />
       </div>
 
-      {/* Collection Archive with consistent styling */}
       <div className="container mx-auto px-4">
         <CollectionArchive 
           posts={posts.docs} 
@@ -71,7 +68,6 @@ export default async function Page() {
         />
       </div>
 
-      {/* Pagination */}
       <div className="container mx-auto px-4 mt-12">
         {posts.totalPages > 1 && posts.page && (
           <Pagination page={posts.page} totalPages={posts.totalPages} />

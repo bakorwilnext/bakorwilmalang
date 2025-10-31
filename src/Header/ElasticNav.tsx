@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import type { Header as HeaderType } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import Link from 'next/link'
-import { SearchIcon, ChevronDown, Menu, X } from 'lucide-react'
+import { SearchIcon, ChevronDown, Menu, X, Volume2, VolumeX } from 'lucide-react'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 
 interface ElasticHeaderNavProps {
@@ -15,8 +15,83 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null)
   const [openMobileDropdown, setOpenMobileDropdown] = useState<number | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true)
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([])
+  const speechTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const navItems = data?.navItems || []
+
+  // Voice synthesis function
+  const speak = (text: string) => {
+    if (!isVoiceEnabled || typeof window === 'undefined') return
+    
+    // Cancel any pending speech
+    if (speechTimeoutRef.current) {
+      clearTimeout(speechTimeoutRef.current)
+    }
+    
+    // Stop current speech
+    window.speechSynthesis.cancel()
+    
+    // Small delay to ensure previous speech is cancelled
+    speechTimeoutRef.current = setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.rate = 0.9 // Slightly slower for clarity
+      utterance.pitch = 1
+      utterance.volume = 0.8
+      
+      // Try to use Indonesian voice if available
+      const voices = window.speechSynthesis.getVoices()
+      const indonesianVoice = voices.find(voice => 
+        voice.lang.includes('id') || voice.lang.includes('ID')
+      )
+      if (indonesianVoice) {
+        utterance.voice = indonesianVoice
+      }
+      
+      window.speechSynthesis.speak(utterance)
+    }, 50)
+  }
+
+  // Load voices and initialize speech synthesis
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Initialize speech synthesis immediately
+      const initSpeech = () => {
+        window.speechSynthesis.getVoices()
+        // Speak a silent utterance to "wake up" the speech synthesis
+        const init = new SpeechSynthesisUtterance('')
+        init.volume = 0
+        window.speechSynthesis.speak(init)
+      }
+      
+      initSpeech()
+      
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices()
+      }
+      
+      // Also initialize on first user interaction
+      const handleFirstInteraction = () => {
+        initSpeech()
+        document.removeEventListener('click', handleFirstInteraction)
+        document.removeEventListener('touchstart', handleFirstInteraction)
+        document.removeEventListener('mouseover', handleFirstInteraction)
+      }
+      
+      document.addEventListener('click', handleFirstInteraction, { once: true })
+      document.addEventListener('touchstart', handleFirstInteraction, { once: true })
+      document.addEventListener('mouseover', handleFirstInteraction, { once: true })
+    }
+    
+    return () => {
+      if (speechTimeoutRef.current) {
+        clearTimeout(speechTimeoutRef.current)
+      }
+      if (typeof window !== 'undefined') {
+        window.speechSynthesis.cancel()
+      }
+    }
+  }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -67,6 +142,14 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
     setOpenMobileDropdown(null)
   }
 
+  const toggleVoice = () => {
+    setIsVoiceEnabled(!isVoiceEnabled)
+    if (typeof window !== 'undefined') {
+      window.speechSynthesis.cancel()
+    }
+    speak(isVoiceEnabled ? 'Suara navigasi dimatikan' : 'Suara navigasi dinyalakan')
+  }
+
   return (
     <div className="sticky top-0 z-50 bg-slate-700 shadow-md">
       <div className="container mx-auto">
@@ -84,7 +167,10 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
                     ref={setDropdownRef(i)}
                   >
                     <div className="flex items-center gap-0.5">
-                      <div onClick={() => setOpenDropdown(null)}>
+                      <div 
+                        onClick={() => setOpenDropdown(null)}
+                        onMouseEnter={() => speak(`Menu ${link.label}`)}
+                      >
                         <CMSLink 
                           {...link}
                           appearance="link" 
@@ -93,6 +179,7 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
                       </div>
                       <button
                         onClick={(e) => handleDropdownToggle(i, e)}
+                        onMouseEnter={() => speak(`${link.label} memiliki submenu`)}
                         className="p-1 text-white hover:text-cyan-400 transition-colors"
                         aria-expanded={openDropdown === i}
                         aria-label={`Toggle ${link.label} dropdown`}
@@ -110,7 +197,10 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
                         <div className="py-1">
                           {dropdownItems.map((dropdownItem, j) => (
                             <div key={j} className="px-1">
-                              <div onClick={() => setOpenDropdown(null)}>
+                              <div 
+                                onClick={() => setOpenDropdown(null)}
+                                onMouseEnter={() => speak(`Submenu ${dropdownItem.link.label}`)}
+                              >
                                 <CMSLink
                                   {...dropdownItem.link}
                                   appearance="link"
@@ -127,12 +217,16 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
               }
 
               return (
-                <CMSLink 
-                  key={i} 
-                  {...link} 
-                  appearance="link" 
-                  className="px-3 py-2 text-sm font-medium text-white hover:text-cyan-400 transition-colors uppercase tracking-wider"
-                />
+                <div
+                  key={i}
+                  onMouseEnter={() => speak(`Menu ${link.label}`)}
+                >
+                  <CMSLink 
+                    {...link} 
+                    appearance="link" 
+                    className="px-3 py-2 text-sm font-medium text-white hover:text-cyan-400 transition-colors uppercase tracking-wider"
+                  />
+                </div>
               )
             })}
           </div>
@@ -141,10 +235,24 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
             <Link 
               href="/search" 
               className="p-2 text-white hover:text-cyan-400 transition-colors"
+              onMouseEnter={() => speak('Pencarian')}
             >
               <span className="sr-only">Search</span>
               <SearchIcon className="w-5 h-5" />
             </Link>
+            
+            <button
+              onClick={toggleVoice}
+              className="p-2 text-white hover:text-cyan-400 transition-colors"
+              title={isVoiceEnabled ? 'Matikan suara' : 'Nyalakan suara'}
+              aria-label={isVoiceEnabled ? 'Matikan suara navigasi' : 'Nyalakan suara navigasi'}
+            >
+              {isVoiceEnabled ? (
+                <Volume2 className="w-5 h-5" />
+              ) : (
+                <VolumeX className="w-5 h-5" />
+              )}
+            </button>
             
             <div className="text-white">
               <ThemeSelector />
@@ -162,6 +270,18 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
               <span className="sr-only">Search</span>
               <SearchIcon className="w-5 h-5" />
             </Link>
+            
+            <button
+              onClick={toggleVoice}
+              className="p-2 text-white hover:text-cyan-400 transition-colors"
+              title={isVoiceEnabled ? 'Matikan suara' : 'Nyalakan suara'}
+            >
+              {isVoiceEnabled ? (
+                <Volume2 className="w-5 h-5" />
+              ) : (
+                <VolumeX className="w-5 h-5" />
+              )}
+            </button>
             
             <div className="text-white">
               <ThemeSelector />
@@ -233,6 +353,7 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
                             setIsMobileMenuOpen(false)
                             setOpenMobileDropdown(null)
                           }}
+                          onTouchStart={() => speak(`Menu ${link.label}`)}
                         >
                           <CMSLink
                             {...link}
@@ -242,6 +363,7 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
                         </div>
                         <button
                           onClick={(e) => handleMobileDropdownToggle(i, e)}
+                          onTouchStart={() => speak(`${link.label} memiliki submenu`)}
                           className="p-3 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-white dark:bg-gray-900"
                         >
                           <ChevronDown 
@@ -255,10 +377,14 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
                       {openMobileDropdown === i && (
                         <div className="ml-4 mt-1 space-y-1 animate-in slide-in-from-top-2 duration-200 bg-white dark:bg-gray-900">
                           {dropdownItems.map((dropdownItem, j) => (
-                            <div key={j} onClick={() => {
-                              setIsMobileMenuOpen(false)
-                              setOpenMobileDropdown(null)
-                            }}>
+                            <div 
+                              key={j} 
+                              onClick={() => {
+                                setIsMobileMenuOpen(false)
+                                setOpenMobileDropdown(null)
+                              }}
+                              onTouchStart={() => speak(`Submenu ${dropdownItem.link.label}`)}
+                            >
                               <CMSLink
                                 {...dropdownItem.link}
                                 appearance="link"
@@ -270,10 +396,13 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
                       )}
                     </>
                   ) : (
-                    <div onClick={() => {
-                      setIsMobileMenuOpen(false)
-                      setOpenMobileDropdown(null)
-                    }}>
+                    <div 
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        setOpenMobileDropdown(null)
+                      }}
+                      onTouchStart={() => speak(`Menu ${link.label}`)}
+                    >
                       <CMSLink
                         {...link}
                         appearance="link"
