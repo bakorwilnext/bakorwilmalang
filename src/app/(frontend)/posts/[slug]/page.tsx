@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayloadClient } from '@/utilities/getPayloadClient'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import RichText from '@/components/RichText'
@@ -19,7 +18,7 @@ import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { getServerSideURL } from '@/utilities/getURL'
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
+  const payload = await getPayloadClient()
   const posts = await payload.find({
     collection: 'posts',
     draft: false,
@@ -31,8 +30,8 @@ export async function generateStaticParams() {
     },
   })
 
-  const params = posts.docs.map(({ slug }) => {
-    return { slug }
+  const params = posts.docs.map(({ slug }: { slug?: string | null }) => {
+    return { slug: slug || '' }
   })
 
   return params
@@ -92,7 +91,7 @@ export default async function Post({ params: paramsPromise }: Args) {
           {post.relatedPosts && post.relatedPosts.length > 0 && (
             <RelatedPosts
               className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-              docs={post.relatedPosts.filter((post) => typeof post === 'object')}
+              docs={post.relatedPosts.filter((relatedPost: Post | string): relatedPost is Post => typeof relatedPost === 'object')}
             />
           )}
         </div>
@@ -111,7 +110,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()
 
-  const payload = await getPayload({ config: configPromise })
+  const payload = await getPayloadClient()
 
   const result = await payload.find({
     collection: 'posts',

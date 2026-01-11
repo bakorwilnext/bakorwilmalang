@@ -6,11 +6,21 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : undefined || process.env.__NEXT_PRIVATE_ORIGIN || 'http://localhost:3000'
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    qualities: [100, 75, 50],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: process.env.NODE_ENV === 'development',
+    localPatterns: [
+      {
+        pathname: '/api/media/**',
+      },
+      {
+        pathname: '/**',
+      },
+    ],
     remotePatterns: [
-      // Existing patterns
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
         const url = new URL(item)
 
@@ -19,21 +29,18 @@ const nextConfig = {
           protocol: url.protocol.replace(':', ''),
         }
       }),
-      // Add dev tunnel support
       {
         protocol: 'https',
         hostname: '*.asse.devtunnels.ms',
         port: '',
         pathname: '**',
       },
-      // Add support for other common dev tunnel patterns
       {
         protocol: 'https',
         hostname: '*.devtunnels.ms',
         port: '',
         pathname: '**',
       },
-      // Add localhost for local development
       {
         protocol: 'http',
         hostname: 'localhost',
@@ -41,9 +48,14 @@ const nextConfig = {
         pathname: '**',
       },
       {
-        protocol: 'https',
+        protocol: 'http',
         hostname: 'localhost',
-        port: '3000',
+        port: '3001',
+        pathname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
         pathname: '**',
       },
     ],

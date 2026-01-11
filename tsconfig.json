@@ -13,7 +13,7 @@
     "skipLibCheck": true,
     "noEmit": true,
     "incremental": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
@@ -33,7 +33,7 @@
       ],
       "@/*": [
         "./src/*"
-      ],
+      ]
     }
   },
   "include": [
@@ -43,9 +43,11 @@
     "redirects.js",
     "next-env.d.ts",
     "next.config.js",
-    "next-sitemap.config.cjs"
-, "src/components/SkipToContent"  ],
+    "next-sitemap.config.cjs",
+    "src/components/SkipToContent",
+    ".next/dev/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules"
-  ],
+  ]
 }

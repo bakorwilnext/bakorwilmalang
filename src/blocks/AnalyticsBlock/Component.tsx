@@ -1,6 +1,5 @@
 import type { Internship, AnalyticsBlock as AnalyticsBlockProps } from '@/payload-types'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayloadClient } from '@/utilities/getPayloadClient'
 import React from 'react'
 import RichText from '@/components/RichText'
 import { InternshipAnalytics } from '@/components/InternshipAnalytics'
@@ -18,7 +17,7 @@ export const AnalyticsBlock: React.FC<
     analyticsType = 'internships'
   } = props
 
-  const payload = await getPayload({ config: configPromise })
+  const payload = await getPayloadClient()
 
   const fetchedInternships = await payload.find({
     collection: 'internships',

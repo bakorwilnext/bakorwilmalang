@@ -1,6 +1,6 @@
 // src/components/AdminGuide/index.tsx
 import React, { useState } from 'react'
-import './index.scss'
+import './index.css'
 
 const baseClass = 'admin-guide'
 

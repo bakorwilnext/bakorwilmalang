@@ -1,6 +1,5 @@
 import type { Internship, InternshipsBlock as InternshipsBlockProps } from '@/payload-types'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayloadClient } from '@/utilities/getPayloadClient'
 import React from 'react'
 import RichText from '@/components/RichText'
 import { InternshipsTable } from '@/components/InternshipsTable'
@@ -23,7 +22,7 @@ export const InternshipsBlock: React.FC<
     showExport = true
   } = props
 
-  const payload = await getPayload({ config: configPromise })
+  const payload = await getPayloadClient()
 
   // Build query conditions based on showStatus
   let whereCondition = {}

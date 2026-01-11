@@ -56,16 +56,21 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
 })
 
 type Props = {
-  data: DefaultTypedEditorState
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any
   enableGutter?: boolean
   enableProse?: boolean
 } & React.HTMLAttributes<HTMLDivElement>
 
 export default function RichText(props: Props) {
-  const { className, enableProse = true, enableGutter = true, ...rest } = props
+  const { className, enableProse = true, enableGutter = true, data, ...rest } = props
+  
+  if (!data) return null
+  
   return (
     <ConvertRichText
       converters={jsxConverters}
+      data={data as DefaultTypedEditorState}
       className={cn(
         'payload-richtext',
         {

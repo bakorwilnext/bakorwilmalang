@@ -1,5 +1,4 @@
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadClient } from '@/utilities/getPayloadClient'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
@@ -10,7 +9,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Slug is required' }, { status: 400 })
     }
 
-    const payload = await getPayload({ config })
+    const payload = await getPayloadClient()
 
     const result = await payload.find({
       collection: 'posts',
@@ -55,7 +54,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Slug is required' }, { status: 400 })
     }
 
-    const payload = await getPayload({ config })
+    const payload = await getPayloadClient()
 
     const result = await payload.find({
       collection: 'posts',
