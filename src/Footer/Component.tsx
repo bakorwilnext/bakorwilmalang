@@ -7,6 +7,7 @@ import type { Footer } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
+import { LazyMap } from '@/components/LazyMap'
 
 export async function Footer() {
   const footerData: Footer = await getCachedGlobal('footer', 1)()
@@ -24,19 +25,11 @@ export async function Footer() {
           <div className="space-y-6">
             <h3 className="text-xl font-bold text-white mb-6">Lokasi</h3>
             
-            {/* Google Maps Embed */}
-            <div className="w-full h-64 rounded-lg overflow-hidden shadow-lg">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.3437000919366!2d112.62150207575247!3d-7.963387679366113!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd6282b6f0d0a61%3A0x474046e3ce87264a!2sBadan%20Koordinasi%20Wilayah%20Pemerintahan%20dan%20Pembangunan%20Jawa%20Timur%20III%20(%20BAKORWIL%20III%20)%20Malang!5e0!3m2!1sid!2sid!4v1721029756068!5m2!1sid!2sid"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Lokasi BAKORWIL III Malang"
-              />
-            </div>
+            {/* Google Maps Embed - Lazy Loaded */}
+            <LazyMap
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.3437000919366!2d112.62150207575247!3d-7.963387679366113!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd6282b6f0d0a61%3A0x474046e3ce87264a!2sBadan%20Koordinasi%20Wilayah%20Pemerintahan%20dan%20Pembangunan%20Jawa%20Timur%20III%20(%20BAKORWIL%20III%20)%20Malang!5e0!3m2!1sid!2sid!4v1721029756068!5m2!1sid!2sid"
+              title="Lokasi BAKORWIL III Malang"
+            />
           </div>
 
           {/* Contact Section */}
