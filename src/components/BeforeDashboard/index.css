@@ -1,0 +1,198 @@
+.dashboard .before-dashboard {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard .before-dashboard__banner h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.dashboard .before-dashboard__quick-actions {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.dashboard .before-dashboard__guide-button {
+  appearance: none;
+  background: var(--theme-success-500);
+  color: white;
+  border: none;
+  padding: 1.5rem 3rem;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard .before-dashboard__guide-button:hover {
+  background: var(--theme-success-600);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard .before-dashboard__guide-button:active {
+  transform: translateY(0);
+}
+
+.dashboard .before-dashboard__intro {
+  background: var(--theme-elevation-50);
+  padding: 2rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid var(--theme-elevation-200);
+}
+
+.dashboard .before-dashboard__intro h5 {
+  margin: 0 0 1rem 0;
+  color: var(--theme-elevation-900);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.dashboard .before-dashboard__instructions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard .before-dashboard__instructions li {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid var(--theme-success-500);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.dashboard .before-dashboard__instructions li:last-child {
+  margin-bottom: 0;
+}
+
+.dashboard .before-dashboard__instructions li strong {
+  color: var(--theme-success-700);
+}
+
+.dashboard .before-dashboard__help-box {
+  background: var(--theme-elevation-100);
+  padding: 2rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid var(--theme-elevation-300);
+}
+
+.dashboard .before-dashboard__help-box h5 {
+  margin: 0 0 1rem 0;
+  color: var(--theme-elevation-900);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dashboard .before-dashboard__help-box ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard .before-dashboard__help-box ul li {
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  position: relative;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--theme-elevation-700);
+}
+
+.dashboard .before-dashboard__help-box ul li:before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--theme-elevation-500);
+  font-weight: 700;
+}
+
+.dashboard .before-dashboard__help-box ul li strong {
+  color: var(--theme-elevation-900);
+}
+
+.dashboard .before-dashboard__warning-box {
+  background: var(--theme-warning-50);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 2px solid var(--theme-warning-300);
+}
+
+.dashboard .before-dashboard__warning-box h5 {
+  margin: 0 0 1rem 0;
+  color: var(--theme-warning-900);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dashboard .before-dashboard__warning-box ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard .before-dashboard__warning-box ul li {
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  position: relative;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--theme-warning-900);
+}
+
+.dashboard .before-dashboard__warning-box ul li:before {
+  content: '!';
+  position: absolute;
+  left: 0;
+  color: var(--theme-warning-700);
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--theme-warning-200);
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.dashboard .before-dashboard a:hover {
+  opacity: 0.85;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .dashboard .before-dashboard__guide-button {
+    width: 100%;
+    padding: 1.25rem 2rem;
+    font-size: 14px;
+  }
+
+  .dashboard .before-dashboard__intro,
+  .dashboard .before-dashboard__help-box,
+  .dashboard .before-dashboard__warning-box {
+    padding: 1.5rem;
+  }
+
+  .dashboard .before-dashboard__intro h5,
+  .dashboard .before-dashboard__help-box h5,
+  .dashboard .before-dashboard__warning-box h5 {
+    font-size: 16px;
+  }
+
+  .dashboard .before-dashboard__intro ul li,
+  .dashboard .before-dashboard__help-box ul li,
+  .dashboard .before-dashboard__warning-box ul li {
+    font-size: 13px;
+  }
+
+  .dashboard .before-dashboard__instructions li {
+    padding: 0.75rem;
+    font-size: 13px;
+  }
+}

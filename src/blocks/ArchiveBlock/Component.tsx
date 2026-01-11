@@ -1,7 +1,6 @@
 import type { Post, ArchiveBlock as ArchiveBlockProps, Category } from '@/payload-types'
 
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayloadClient } from '@/utilities/getPayloadClient'
 import React from 'react'
 import RichText from '@/components/RichText'
 
@@ -29,7 +28,7 @@ export const ArchiveBlock: React.FC<
   let posts: Post[] = []
   let allCategories: Category[] = []
 
-  const payload = await getPayload({ config: configPromise })
+  const payload = await getPayloadClient()
 
   const fetchedCategories = await payload.find({
     collection: 'categories',

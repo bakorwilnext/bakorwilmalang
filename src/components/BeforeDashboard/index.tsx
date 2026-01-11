@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 
 import { SeedButton } from './SeedButton'
 import AdminGuide from '../AdminGuide'
-import './index.scss'
+import './index.css'
 
 const baseClass = 'before-dashboard'
 

@@ -2,8 +2,7 @@ import React from 'react'
 import type { StaticImageData } from 'next/image'
 import Image from 'next/image'
 import Link from 'next/link'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayloadClient } from '@/utilities/getPayloadClient'
 
 // Define the types directly since they don't exist in payload-types yet
 interface ServiceItem {
@@ -50,7 +49,7 @@ export const ServicesBlock: React.FC<Props> = async (props) => {
     introContent,
   } = props
 
-  const payload = await getPayload({ config: configPromise })
+  const payload = await getPayloadClient()
 
   // Helper function to generate link href
   const generateHref = (service: ServiceItem): string | null => {
