@@ -16,13 +16,15 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
   const [openMobileDropdown, setOpenMobileDropdown] = useState<number | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(true)
+  const [isSpeechInitialized, setIsSpeechInitialized] = useState(false)
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([])
   const speechTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const navItems = data?.navItems || []
 
-  // Voice synthesis function
+  // Voice synthesis function - only works after user interaction
   const speak = (text: string) => {
-    if (!isVoiceEnabled || typeof window === 'undefined') return
+    // IMPORTANT: Only speak if user has interacted with the page (prevents deprecated API warning)
+    if (!isVoiceEnabled || !isSpeechInitialized || typeof window === 'undefined') return
     
     // Cancel any pending speech
     if (speechTimeoutRef.current) {
@@ -52,37 +54,41 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
     }, 50)
   }
 
-  // Load voices and initialize speech synthesis
+  // Load voices and initialize speech synthesis only after user interaction
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Initialize speech synthesis immediately
-      const initSpeech = () => {
-        window.speechSynthesis.getVoices()
-        // Speak a silent utterance to "wake up" the speech synthesis
-        const init = new SpeechSynthesisUtterance('')
-        init.volume = 0
-        window.speechSynthesis.speak(init)
-      }
-      
-      initSpeech()
-      
-      window.speechSynthesis.onvoiceschanged = () => {
+      // Load voices without speaking
+      const loadVoices = () => {
         window.speechSynthesis.getVoices()
       }
       
-      // Also initialize on first user interaction
+      loadVoices()
+      
+      window.speechSynthesis.onvoiceschanged = loadVoices
+      
+      // Initialize speech synthesis ONLY on first user interaction
       const handleFirstInteraction = () => {
-        initSpeech()
+        setIsSpeechInitialized(true)
+        loadVoices()
         document.removeEventListener('click', handleFirstInteraction)
         document.removeEventListener('touchstart', handleFirstInteraction)
-        document.removeEventListener('mouseover', handleFirstInteraction)
+        document.removeEventListener('keydown', handleFirstInteraction)
       }
       
       document.addEventListener('click', handleFirstInteraction, { once: true })
       document.addEventListener('touchstart', handleFirstInteraction, { once: true })
-      document.addEventListener('mouseover', handleFirstInteraction, { once: true })
+      document.addEventListener('keydown', handleFirstInteraction, { once: true })
+      
+      return () => {
+        document.removeEventListener('click', handleFirstInteraction)
+        document.removeEventListener('touchstart', handleFirstInteraction)
+        document.removeEventListener('keydown', handleFirstInteraction)
+      }
     }
-    
+  }, [])
+
+  // Cleanup effect
+  useEffect(() => {
     return () => {
       if (speechTimeoutRef.current) {
         clearTimeout(speechTimeoutRef.current)
@@ -328,7 +334,9 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
               setOpenMobileDropdown(null)
             }}
             className="p-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            aria-label="Tutup menu"
           >
+            <span className="sr-only">Tutup menu</span>
             <X className="w-5 h-5" />
           </button>
         </div>
