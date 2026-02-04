@@ -157,7 +157,7 @@ export const ElasticHeaderNav: React.FC<ElasticHeaderNavProps> = ({ data }) => {
   }
 
   return (
-    <div className="sticky top-0 z-50 bg-slate-700 shadow-md">
+    <div className="bg-slate-700 shadow-md">
       <div className="container mx-auto">
         {/* Desktop Navigation */}
         <nav className="hidden md:flex justify-center items-center py-4">
