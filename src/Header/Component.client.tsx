@@ -18,6 +18,9 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   const [theme, setTheme] = useState<string | null>(null)
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
   const [isClient, setIsClient] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const navRef = React.useRef<HTMLDivElement>(null)
+  const navOffsetRef = React.useRef<number>(0)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
 
@@ -46,11 +49,53 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
     return () => clearInterval(timer)
   }, [isClient])
 
+  // Calculate and store nav offset on mount
+  useEffect(() => {
+    const calculateOffset = () => {
+      if (navRef.current) {
+        // Get the offset relative to the document
+        const rect = navRef.current.getBoundingClientRect()
+        navOffsetRef.current = rect.top + window.scrollY
+      }
+    }
+    
+    // Wait for layout to settle
+    const timer = setTimeout(calculateOffset, 100)
+    window.addEventListener('resize', calculateOffset, { passive: true })
+    
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', calculateOffset)
+    }
+  }, [])
+
+  // Scroll detection for sticky navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY
+      const threshold = navOffsetRef.current
+      
+      if (threshold > 0 && scrollY >= threshold) {
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll() // Check initial state
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('id-ID', {
       day: 'numeric',
       month: 'long',
-      year: 'numeric'
+      year: 'numeric',
+      timeZone: 'Asia/Jakarta'
     }).format(date)
   }
 
@@ -59,7 +104,8 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      hour12: false
+      hour12: false,
+      timeZone: 'Asia/Jakarta'
     }).format(date)
   }
 
@@ -128,7 +174,15 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
         </div>
       </div>
 
-      <div className="sticky top-0 z-50">
+      {/* Placeholder to prevent layout shift when nav becomes fixed */}
+      {isScrolled && navRef.current && (
+        <div style={{ height: navRef.current.offsetHeight }} />
+      )}
+      
+      <div 
+        ref={navRef}
+        className={isScrolled ? 'fixed top-0 left-0 right-0 z-50' : ''}
+      >
         <ElasticHeaderNav data={data} />
       </div>
     </div>
