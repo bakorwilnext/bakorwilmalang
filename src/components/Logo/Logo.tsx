@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import React from 'react'
+import NextImage from 'next/image'
 import type { Media } from '@/payload-types'
 
 interface Props {
@@ -16,11 +17,11 @@ export const Logo = (props: Props) => {
     priority: priorityFromProps, 
     className, 
     logo,
-    fixedHeight = 68 // Default height of 68px (34px * 2 for the scale-150)
+    fixedHeight = 68
   } = props
 
   const loading = loadingFromProps || 'lazy'
-  const priority = priorityFromProps || 'low'
+  const isPriority = priorityFromProps === 'high'
 
   // Default fallback logo
   const defaultLogoSrc = "/BAKORWIL-logo-header.webp"
@@ -34,30 +35,23 @@ export const Logo = (props: Props) => {
   const calculatedHeight = fixedHeight
   
   if (logo?.width && logo?.height) {
-    // Calculate width maintaining aspect ratio with fixed height
     const aspectRatio = logo.width / logo.height
     calculatedWidth = Math.round(fixedHeight * aspectRatio)
   }
 
   return (
-    /* eslint-disable @next/next/no-img-element */
-    <img
+    <NextImage
       alt={logoAlt}
       width={calculatedWidth}
       height={calculatedHeight}
-      loading={loading}
-      fetchPriority={priority}
-      decoding="async"
+      loading={isPriority ? undefined : loading}
+      priority={isPriority}
+      quality={60}
       className={clsx(
-        'h-auto object-contain', // Remove fixed height classes and use object-contain
+        'h-auto object-contain',
         className
       )}
       src={logoSrc}
-      style={{
-        height: `${fixedHeight}px`,
-        width: 'auto', // Let width adjust automatically
-        maxWidth: '100%', // Prevent overflow
-      }}
     />
   )
 }

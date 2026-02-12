@@ -3,6 +3,7 @@
 import React from 'react'
 import { useAccessibility } from '@/providers/Accessibility'
 import { X, RefreshCw, Accessibility, Type, Eye, MousePointer, AlignLeft } from 'lucide-react'
+import './accessibility.css'
 
 export const AccessibilityPanel: React.FC = () => {
   const { settings, updateSetting, resetSettings, isPanelOpen, togglePanel } = useAccessibility()

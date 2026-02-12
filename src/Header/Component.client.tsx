@@ -32,53 +32,52 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
     if (headerTheme && headerTheme !== theme) setTheme(headerTheme)
   }, [headerTheme, theme])
 
-  // Initialize client-side rendering
   useEffect(() => {
     setIsClient(true)
     setCurrentTime(new Date())
   }, [])
 
-  // Update time every second only on client
   useEffect(() => {
     if (!isClient) return
 
-    const timer = setInterval(() => {
+    const intervalId = setInterval(() => {
       setCurrentTime(new Date())
     }, 1000)
 
-    return () => clearInterval(timer)
+    return () => {
+      clearInterval(intervalId)
+    }
   }, [isClient])
 
-  // Calculate and store nav offset on mount
   useEffect(() => {
     const calculateOffset = () => {
       if (navRef.current) {
-        // Get the offset relative to the document
         const rect = navRef.current.getBoundingClientRect()
         navOffsetRef.current = rect.top + window.scrollY
       }
     }
     
-    // Wait for layout to settle
-    const timer = setTimeout(calculateOffset, 100)
+    calculateOffset()
     window.addEventListener('resize', calculateOffset, { passive: true })
     
     return () => {
-      clearTimeout(timer)
       window.removeEventListener('resize', calculateOffset)
     }
   }, [])
 
-  // Scroll detection for sticky navigation
   useEffect(() => {
+    let ticking = false
+    
     const handleScroll = () => {
-      const scrollY = window.scrollY
-      const threshold = navOffsetRef.current
-      
-      if (threshold > 0 && scrollY >= threshold) {
-        setIsScrolled(true)
-      } else {
-        setIsScrolled(false)
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY
+          const threshold = navOffsetRef.current
+          
+          setIsScrolled(scrollY >= threshold && threshold > 0)
+          ticking = false
+        })
+        ticking = true
       }
     }
 
@@ -116,8 +115,8 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
           <div className="flex items-center gap-4">
             {isClient && currentTime ? (
               <>
-                <span>{formatDate(currentTime)}</span>
-                <span>{formatTime(currentTime)}</span>
+                <span suppressHydrationWarning>{formatDate(currentTime)}</span>
+                <span suppressHydrationWarning>{formatTime(currentTime)}</span>
               </>
             ) : (
               <>
@@ -174,9 +173,8 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
         </div>
       </div>
 
-      {/* Placeholder to prevent layout shift when nav becomes fixed */}
       {isScrolled && navRef.current && (
-        <div style={{ height: navRef.current.offsetHeight }} />
+        <div style={{ height: navRef.current.offsetHeight }} aria-hidden="true" />
       )}
       
       <div 
