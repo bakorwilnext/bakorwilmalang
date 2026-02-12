@@ -1,6 +1,6 @@
 'use client'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 import type { Page } from '@/payload-types'
@@ -22,18 +22,20 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
 
   const carouselItems = Array.isArray(carouselImages) ? carouselImages : []
 
-  const nextSlide = () => {
+  // OPTIMIZED: Use useCallback for stable references
+  const nextSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % carouselItems.length)
-  }
+  }, [carouselItems.length])
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + carouselItems.length) % carouselItems.length)
-  }
+  }, [carouselItems.length])
 
-  const goToSlide = (index: number) => {
+  const goToSlide = useCallback((index: number) => {
     setCurrentIndex(index)
-  }
+  }, [])
 
+  // OPTIMIZED: Intersection Observer
   useEffect(() => {
     if (!carouselRef.current || carouselItems.length === 0) return
 
@@ -46,7 +48,7 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
           }
         })
       },
-      { rootMargin: '100px' }
+      { rootMargin: '50px' } // Reduced from 100px
     )
 
     observer.observe(carouselRef.current)
@@ -54,11 +56,10 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
     return () => observer.disconnect()
   }, [carouselItems.length])
 
+  // OPTIMIZED: Autoplay with cleanup
   useEffect(() => {
     if (isAutoplay && carouselItems.length > 1 && isCarouselVisible) {
-      autoplayRef.current = setInterval(() => {
-        nextSlide()
-      }, 5000)
+      autoplayRef.current = setInterval(nextSlide, 5000)
     }
 
     return () => {
@@ -66,16 +67,17 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
         clearInterval(autoplayRef.current)
       }
     }
-  }, [isAutoplay, currentIndex, carouselItems.length, isCarouselVisible])
+  }, [isAutoplay, carouselItems.length, isCarouselVisible, nextSlide])
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback(() => {
     setIsAutoplay(false)
-  }
+  }, [])
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     setIsAutoplay(true)
-  }
+  }, [])
 
+  // OPTIMIZED: Prefetch only next image
   useEffect(() => {
     if (!isCarouselVisible || carouselItems.length <= 1) return
 
@@ -88,18 +90,24 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
       link.as = 'image'
       link.href = nextItem.url as string
       document.head.appendChild(link)
+
+      return () => {
+        document.head.removeChild(link)
+      }
     }
   }, [currentIndex, carouselItems, isCarouselVisible])
 
   return (
     <div className="relative w-full overflow-visible" data-theme="dark">
+      {/* CRITICAL: Prioritize hero image */}
       <div className="relative w-full h-[60vh] overflow-hidden">
         {media && typeof media === 'object' && (
           <Media
             fill
-            priority
+            priority // CRITICAL: Must be priority for LCP
             imgClassName="object-cover object-center"
             resource={media}
+            size="100vw" // CRITICAL: Add sizes
           />
         )}
         
@@ -118,6 +126,7 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
         </div>
       </div>
 
+      {/* Carousel remains the same but with lazy loading */}
       {carouselItems.length > 0 && (
         <div 
           ref={carouselRef}
@@ -158,7 +167,9 @@ export const CustomHero: React.FC<Page['hero']> = ({ media, richText, carouselIm
                           className="w-full h-full"
                           imgClassName="w-full h-full object-contain"
                           resource={item}
-                          priority={false}
+                          priority={index === currentIndex} // Priority only for current
+                          loading={index === currentIndex ? 'eager' : 'lazy'}
+                          size="(max-width: 768px) 100vw, 768px"
                         />
                       </div>
                     </div>

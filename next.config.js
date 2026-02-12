@@ -11,7 +11,8 @@ const nextConfig = {
     optimizeCss: true,
   },
   images: {
-    qualities: [100, 75, 60, 50],
+    qualities: [75, 60, 50],
+    formats: ['image/avif', 'image/webp'],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     unoptimized: process.env.NODE_ENV === 'development',
