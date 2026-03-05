@@ -1,12 +1,11 @@
 import React from 'react'
-import dynamic from 'next/dynamic'
 
 import type { Page } from '@/payload-types'
 
-const HighImpactHero = dynamic(() => import('@/heros/HighImpact').then(m => m.HighImpactHero))
-const LowImpactHero = dynamic(() => import('@/heros/LowImpact').then(m => m.LowImpactHero))
-const MediumImpactHero = dynamic(() => import('@/heros/MediumImpact').then(m => m.MediumImpactHero))
-const CustomHero = dynamic(() => import('@/heros/CustomHero').then(m => m.CustomHero))
+import { HighImpactHero } from '@/heros/HighImpact'
+import { LowImpactHero } from '@/heros/LowImpact'
+import { MediumImpactHero } from '@/heros/MediumImpact'
+import { CustomHero } from '@/heros/CustomHero'
 
 const heroes = {
   highImpact: HighImpactHero,
