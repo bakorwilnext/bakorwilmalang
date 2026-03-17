@@ -74,6 +74,7 @@ export interface Config {
     users: User;
     internships: Internship;
     agenda: Agenda;
+    comments: Comment;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -93,6 +94,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     internships: InternshipsSelect<false> | InternshipsSelect<true>;
     agenda: AgendaSelect<false> | AgendaSelect<true>;
+    comments: CommentsSelect<false> | CommentsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1024,6 +1026,32 @@ export interface Agenda {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Manage blog post comments and moderation
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments".
+ */
+export interface Comment {
+  id: string;
+  /**
+   * The post this comment belongs to
+   */
+  post: string | Post;
+  authorName: string;
+  authorEmail: string;
+  body: string;
+  /**
+   * Only approved comments are visible on the website
+   */
+  status: 'pending' | 'approved' | 'rejected';
+  /**
+   * If this is a reply to another comment
+   */
+  parentComment?: (string | null) | Comment;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -1240,6 +1268,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'agenda';
         value: string | Agenda;
+      } | null)
+    | ({
+        relationTo: 'comments';
+        value: string | Comment;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1723,6 +1755,20 @@ export interface AgendaSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments_select".
+ */
+export interface CommentsSelect<T extends boolean = true> {
+  post?: T;
+  authorName?: T;
+  authorEmail?: T;
+  body?: T;
+  status?: T;
+  parentComment?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

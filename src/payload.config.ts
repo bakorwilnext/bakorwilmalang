@@ -14,6 +14,7 @@ import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { Internships } from './collections/Internships'
 import { Agenda } from './collections/Agenda'
+import { Comments } from './collections/Comments'
 
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
@@ -76,7 +77,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Internships, Agenda],
+  collections: [Pages, Posts, Media, Categories, Users, Internships, Agenda, Comments],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [
