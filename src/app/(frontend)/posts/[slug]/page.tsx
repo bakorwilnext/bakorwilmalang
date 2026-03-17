@@ -8,6 +8,7 @@ import React, { cache } from 'react'
 import RichText from '@/components/RichText'
 import { ShareButtons } from '@/components/ShareButtons/ShareButtons'
 import { ViewCounter } from '@/components/ViewCounter'
+import { CommentsSection } from '@/components/CommentsSection'
 
 import type { Post } from '@/payload-types'
 
@@ -87,6 +88,8 @@ export default async function Post({ params: paramsPromise }: Args) {
             
 
           </div>
+
+          <CommentsSection postId={post.id} />
 
           {post.relatedPosts && post.relatedPosts.length > 0 && (
             <RelatedPosts
