@@ -887,44 +887,54 @@ export interface AnalyticsBlock {
 export interface ServicesBlock {
   sectionTitle?: string | null;
   sectionSubtitle?: string | null;
-  /**
-   * Optional rich text content to display below the section title and subtitle
-   */
-  introContent?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Add the services you want to showcase. On mobile, 2 cards per row will be displayed.
-   */
   services?:
     | {
         /**
-         * Upload an image that represents this service. Recommended aspect ratio: 4:3 or 3:2
+         * Pilih ikon yang merepresentasikan layanan ini
          */
-        image: string | Media;
+        icon:
+          | 'landmark'
+          | 'building'
+          | 'briefcase'
+          | 'handshake'
+          | 'users'
+          | 'user-check'
+          | 'file-text'
+          | 'file-badge'
+          | 'clipboard-list'
+          | 'scroll-text'
+          | 'scale'
+          | 'shield-check'
+          | 'info'
+          | 'megaphone'
+          | 'newspaper'
+          | 'mail'
+          | 'phone'
+          | 'globe'
+          | 'hard-hat'
+          | 'map-pin'
+          | 'map'
+          | 'route'
+          | 'droplets'
+          | 'leaf'
+          | 'graduation-cap'
+          | 'heart-pulse'
+          | 'book-open'
+          | 'award'
+          | 'bar-chart-3'
+          | 'pie-chart'
+          | 'trending-up'
+          | 'database'
+          | 'settings'
+          | 'calendar'
+          | 'clock'
+          | 'download'
+          | 'external-link'
+          | 'star';
         title: string;
-        subtitle?: string | null;
         description?: string | null;
-        /**
-         * Add a link to make this service card clickable
-         */
         link?: {
           type?: ('reference' | 'custom') | null;
-          /**
-           * Select a page or post to link to
-           */
           reference?:
             | ({
                 relationTo: 'pages';
@@ -934,13 +944,7 @@ export interface ServicesBlock {
                 relationTo: 'posts';
                 value: string | Post;
               } | null);
-          /**
-           * Enter the complete URL including https://
-           */
           url?: string | null;
-          /**
-           * Check this to open the link in a new browser tab
-           */
           newTab?: boolean | null;
         };
         id?: string | null;
@@ -956,12 +960,10 @@ export interface ServicesBlock {
  */
 export interface AgendaBlock {
   title?: string | null;
-  defaultView?: ('month' | 'week' | 'day') | null;
-  showUpcoming?: boolean | null;
   /**
-   * Number of upcoming events to display
+   * Jumlah agenda yang ditampilkan
    */
-  upcomingLimit?: number | null;
+  limit?: number | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'agendaBlock';
@@ -1016,11 +1018,6 @@ export interface Agenda {
   startDate: string;
   endDate?: string | null;
   location?: string | null;
-  instructor?: string | null;
-  /**
-   * Optional color for event display
-   */
-  color?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1509,13 +1506,11 @@ export interface AnalyticsBlockSelect<T extends boolean = true> {
 export interface ServicesBlockSelect<T extends boolean = true> {
   sectionTitle?: T;
   sectionSubtitle?: T;
-  introContent?: T;
   services?:
     | T
     | {
-        image?: T;
+        icon?: T;
         title?: T;
-        subtitle?: T;
         description?: T;
         link?:
           | T
@@ -1536,9 +1531,7 @@ export interface ServicesBlockSelect<T extends boolean = true> {
  */
 export interface AgendaBlockSelect<T extends boolean = true> {
   title?: T;
-  defaultView?: T;
-  showUpcoming?: T;
-  upcomingLimit?: T;
+  limit?: T;
   id?: T;
   blockName?: T;
 }
@@ -1750,8 +1743,6 @@ export interface AgendaSelect<T extends boolean = true> {
   startDate?: T;
   endDate?: T;
   location?: T;
-  instructor?: T;
-  color?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

@@ -7,40 +7,14 @@ export const AgendaBlock: Block = {
     {
       name: 'title',
       type: 'text',
-      defaultValue: 'Calendar',
+      defaultValue: 'Agenda',
     },
     {
-      name: 'defaultView',
-      type: 'select',
-      defaultValue: 'month',
-      options: [
-        {
-          label: 'Month View',
-          value: 'month',
-        },
-        {
-          label: 'Week View',
-          value: 'week',
-        },
-        {
-          label: 'Day View',
-          value: 'day',
-        },
-      ],
-    },
-    {
-      name: 'showUpcoming',
-      type: 'checkbox',
-      defaultValue: false,
-      label: 'Show upcoming events list',
-    },
-    {
-      name: 'upcomingLimit',
+      name: 'limit',
       type: 'number',
-      defaultValue: 5,
+      defaultValue: 6,
       admin: {
-        condition: (data) => data.showUpcoming,
-        description: 'Number of upcoming events to display',
+        description: 'Jumlah agenda yang ditampilkan',
       },
     },
   ],

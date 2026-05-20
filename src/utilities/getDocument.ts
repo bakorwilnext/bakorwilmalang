@@ -1,4 +1,4 @@
-import type { Config } from 'src/payload-types'
+import type { Config } from '@/payload-types'
 
 import { getPayloadClient } from '@/utilities/getPayloadClient'
 import { unstable_cache } from 'next/cache'
