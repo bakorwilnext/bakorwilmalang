@@ -24,6 +24,9 @@ const blockComponents = {
   agendaBlock: AgendaBlock,
 }
 
+// Blocks with full-width backgrounds that should render flush (no outer margin)
+const flushBlocks = new Set(['servicesBlock'])
+
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
 }> = (props) => {
@@ -41,8 +44,9 @@ export const RenderBlocks: React.FC<{
             const Block = blockComponents[blockType]
 
             if (Block) {
+              const isFlush = flushBlocks.has(blockType)
               return (
-                <div className="my-16" key={index}>
+                <div className={isFlush ? '' : 'my-16'} key={index}>
                   {/* @ts-expect-error there may be some mismatch between the expected types here */}
                   <Block {...block} disableInnerContainer />
                 </div>

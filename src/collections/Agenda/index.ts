@@ -15,7 +15,6 @@ export const Agenda: CollectionConfig = {
     startDate: true,
     endDate: true,
     location: true,
-    instructor: true,
   },
   admin: {
     defaultColumns: ['title', 'startDate', 'location', 'updatedAt'],
@@ -67,20 +66,6 @@ export const Agenda: CollectionConfig = {
       type: 'text',
       admin: {
         placeholder: 'Event location...',
-      },
-    },
-    {
-      name: 'instructor',
-      type: 'text',
-      admin: {
-        placeholder: 'Instructor name...',
-      },
-    },
-    {
-      name: 'color',
-      type: 'text',
-      admin: {
-        description: 'Optional color for event display',
       },
     },
   ],

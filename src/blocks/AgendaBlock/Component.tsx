@@ -1,450 +1,343 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, X, MapPin, User, Clock } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { X, MapPin, Clock, Calendar, ChevronRight } from 'lucide-react'
 
 interface AgendaItem {
-  id: string;
-  title: string;
-  description?: string;
-  startDate: string;
-  endDate?: string;
-  location?: string;
-  instructor?: string;
-  color?: string;
+  id: string
+  title: string
+  description?: string
+  startDate: string
+  endDate?: string
+  location?: string
 }
 
 interface AgendaBlockProps {
-  title?: string;
-  defaultView?: 'month' | 'week' | 'day';
-  showUpcoming?: boolean;
-  upcomingLimit?: number;
-  disableInnerContainer?: boolean;
+  title?: string
+  limit?: number
+  disableInnerContainer?: boolean
+}
+
+const MONTH_NAMES_ID = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+]
+
+const MONTH_SHORT_ID = [
+  'JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN',
+  'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES',
+]
+
+const DAY_NAMES_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+
+const DISPLAY_LIMIT = 6
+
+function createSafeDate(dateInput: string | Date): Date | null {
+  try {
+    if (!dateInput) return null
+    const date = new Date(dateInput)
+    return isNaN(date.getTime()) ? null : date
+  } catch {
+    return null
+  }
+}
+
+function formatTime(dateStr: string): string {
+  const date = createSafeDate(dateStr)
+  if (!date) return ''
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })
+}
+
+function formatFullDate(dateStr: string): string {
+  const date = createSafeDate(dateStr)
+  if (!date) return ''
+  return `${DAY_NAMES_ID[date.getDay()]}, ${date.getDate()} ${MONTH_NAMES_ID[date.getMonth()]} ${date.getFullYear()}`
 }
 
 const AgendaBlock: React.FC<AgendaBlockProps> = ({
-  title = 'Agenda Bakorwil Malang',
-  defaultView = 'week',
-  showUpcoming = false,
-  upcomingLimit = 5,
+  limit = DISPLAY_LIMIT,
   disableInnerContainer = false,
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedEvent, setSelectedEvent] = useState<AgendaItem | null>(null);
-  const [showModal, setShowModal] = useState(false);
+  const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedEvent, setSelectedEvent] = useState<AgendaItem | null>(null)
 
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
-  const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-
-  // Optimized date utilities
-  const createSafeDate = useCallback((dateInput: string | Date): Date | null => {
-    try {
-      if (!dateInput) return null;
-      const date = new Date(dateInput);
-      return isNaN(date.getTime()) ? null : date;
-    } catch {
-      return null;
-    }
-  }, []);
-
-  const formatDateKey = useCallback((date: Date): string => {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-  }, []);
-
-  // Fetch agenda items with better error handling
   useEffect(() => {
-    let mounted = true;
-    
-    const fetchAgendaItems = async () => {
-      try {
-        const response = await fetch('/api/agenda?limit=1000&depth=0', {
-          next: { revalidate: 60 }
-        });
-        
-        if (!mounted) return;
-        
-        if (response.ok) {
-          const data = await response.json();
-          const validItems = (data.docs || [])
-            .filter((item: AgendaItem) => createSafeDate(item.startDate))
-            .sort((a: AgendaItem, b: AgendaItem) => 
-              new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-            );
-          setAgendaItems(validItems);
-        }
-      } catch (error) {
-        console.error('Failed to fetch agenda:', error);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
+    let mounted = true
 
-    fetchAgendaItems();
-    return () => { mounted = false; };
-  }, [createSafeDate]);
-
-  // Memoized events by date map for O(1) lookup
-  const eventsByDate = useMemo(() => {
-    const map = new Map<string, AgendaItem[]>();
-    
-    agendaItems.forEach(item => {
-      const date = createSafeDate(item.startDate);
-      if (!date) return;
-      
-      const key = formatDateKey(date);
-      const existing = map.get(key) || [];
-      map.set(key, [...existing, item]);
-    });
-    
-    return map;
-  }, [agendaItems, createSafeDate, formatDateKey]);
-
-  // Memoized sorted active days
-  const activeDays = useMemo(() => {
-    return Array.from(eventsByDate.keys())
-      .map(key => {
-        const [year, month, day] = key.split('-').map(Number);
-        return new Date(year, month - 1, day);
+    fetch('/api/agenda?limit=1000&depth=0')
+      .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+      .then((data) => {
+        if (!mounted) return
+        const valid = (data.docs || [])
+          .filter((item: AgendaItem) => createSafeDate(item.startDate))
+          .sort(
+            (a: AgendaItem, b: AgendaItem) =>
+              new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+          )
+        setAgendaItems(valid)
       })
-      .sort((a, b) => a.getTime() - b.getTime());
-  }, [eventsByDate]);
+      .catch((err) => console.error('Failed to fetch agenda:', err))
+      .finally(() => {
+        if (mounted) setLoading(false)
+      })
 
-  // Get display days efficiently
-  const displayDays = useMemo(() => {
-    if (activeDays.length === 0) {
-      // Show current week when no events
-      const startOfWeek = new Date(currentDate);
-      const dayOfWeek = startOfWeek.getDay();
-      const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-      startOfWeek.setDate(startOfWeek.getDate() + diffToMonday);
-      
-      return Array.from({ length: 7 }, (_, i) => {
-        const day = new Date(startOfWeek);
-        day.setDate(startOfWeek.getDate() + i);
-        return day;
-      });
+    return () => {
+      mounted = false
     }
-    
-    // Find start index based on current date
-    const currentDateStr = formatDateKey(currentDate);
-    let startIndex = activeDays.findIndex(day => formatDateKey(day) >= currentDateStr);
-    
-    if (startIndex === -1) {
-      startIndex = Math.max(0, activeDays.length - 7);
-    } else {
-      startIndex = Math.max(0, startIndex - 3);
-    }
-    
-    return activeDays.slice(startIndex, startIndex + 7);
-  }, [activeDays, currentDate, formatDateKey]);
+  }, [])
 
-  // Get events for date - now O(1) with map lookup
-  const getEventsForDate = useCallback((date: Date) => {
-    const key = formatDateKey(date);
-    return eventsByDate.get(key) || [];
-  }, [eventsByDate, formatDateKey]);
+  const upcomingEvents = useMemo(() => {
+    const now = new Date()
+    now.setHours(0, 0, 0, 0)
 
-  // Navigate week
-  const navigateWeek = useCallback((direction: number) => {
-    if (activeDays.length === 0) {
-      const newDate = new Date(currentDate);
-      newDate.setDate(newDate.getDate() + (direction * 7));
-      setCurrentDate(newDate);
-      return;
-    }
-    
-    const currentDateStr = formatDateKey(currentDate);
-    let currentIndex = activeDays.findIndex(day => formatDateKey(day) >= currentDateStr);
-    
-    if (currentIndex === -1) currentIndex = activeDays.length - 1;
-    
-    const newIndex = Math.max(0, Math.min(activeDays.length - 1, currentIndex + (direction * 7)));
-    setCurrentDate(activeDays[newIndex] || currentDate);
-  }, [activeDays, currentDate, formatDateKey]);
+    const upcoming = agendaItems.filter((item) => {
+      const date = createSafeDate(item.startDate)
+      return date ? date.getTime() >= now.getTime() : false
+    })
 
-  const isToday = useCallback((date: Date) => {
-    const today = new Date();
-    return formatDateKey(date) === formatDateKey(today);
-  }, [formatDateKey]);
+    // Fallback to most recent if nothing upcoming
+    if (upcoming.length === 0) return agendaItems.slice(-limit)
+    return upcoming.slice(0, limit)
+  }, [agendaItems, limit])
 
-  const formatTime = useCallback((dateStr: string) => {
-    const date = createSafeDate(dateStr);
-    if (!date) return 'Invalid time';
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
-    });
-  }, [createSafeDate]);
+  const containerClass = `w-full mx-auto py-16 ${!disableInnerContainer ? 'container px-4' : ''}`
 
-  const handleEventClick = useCallback((event: AgendaItem) => {
-    setSelectedEvent(event);
-    setShowModal(true);
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setShowModal(false);
-    setSelectedEvent(null);
-  }, []);
-
-  // Optimized date range display
-  const weekRange = useMemo(() => {
-    if (displayDays.length === 0) {
-      return monthNames[currentDate.getMonth()].toUpperCase();
-    }
-
-    const startDay = displayDays[0];
-    const endDay = displayDays[displayDays.length - 1];
-
-    if (startDay.getMonth() === endDay.getMonth()) {
-      return `${startDay.getDate()}-${endDay.getDate()} ${monthNames[startDay.getMonth()].toUpperCase()}`;
-    }
-    
-    return `${startDay.getDate()} ${monthNames[startDay.getMonth()].substring(0, 3).toUpperCase()} - ${endDay.getDate()} ${monthNames[endDay.getMonth()].substring(0, 3).toUpperCase()}`;
-  }, [displayDays, currentDate, monthNames]);
-
+  // Loading skeleton
   if (loading) {
     return (
-      <div className={`w-full mx-auto py-16 ${!disableInnerContainer ? 'container px-4' : ''}`}>
-        <div className="animate-pulse bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-          <div className="p-6">
-            <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded w-1/4 mb-6"></div>
-            <div className="h-96 bg-gray-300 dark:bg-gray-600 rounded"></div>
+      <section className={containerClass}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-12">
+            <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2" />
+            <div className="h-4 w-80 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 3 }, (_, i) => (
+              <div key={i} className="rounded-xl p-6 animate-pulse">
+                <div className="flex gap-5">
+                  <div className="w-[72px] h-[84px] bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0" />
+                  <div className="flex-1 space-y-3">
+                    <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+                    <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-    );
+      </section>
+    )
+  }
+
+  // Empty state
+  if (upcomingEvents.length === 0) {
+    return (
+      <section className={containerClass}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader />
+          <div className="text-center py-16 rounded-xl border border-gray-100 dark:border-gray-700">
+            <Calendar className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400 text-lg">Belum ada agenda mendatang</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
+              Agenda akan ditampilkan di sini saat tersedia
+            </p>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (
     <>
-      <div className={`w-full mx-auto py-16 ${!disableInnerContainer ? 'container px-4' : ''}`}>
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
-          {/* Header */}
-          <div className="px-6 py-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-              {/* Navigation */}
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => navigateWeek(-1)}
-                  className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
-                  aria-label="Previous week"
-                >
-                  <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                </button>
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 min-w-[120px] text-center">
-                  {weekRange}
-                </span>
-                <button
-                  onClick={() => navigateWeek(1)}
-                  className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
-                  aria-label="Next week"
-                >
-                  <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                </button>
-              </div>
+      <section className={containerClass}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader />
 
-              {/* Title - This is the configurable title */}
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 text-center lg:text-left">
-                {title}
-              </h2>
-            </div>
+          {/* Agenda Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {upcomingEvents.map((event) => (
+              <AgendaCard
+                key={event.id}
+                event={event}
+                onClick={() => setSelectedEvent(event)}
+              />
+            ))}
           </div>
 
-          {/* Week View */}
-          <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 lg:gap-6">
-              {displayDays.map((day, index) => {
-                const events = getEventsForDate(day);
-                const isTodayDay = isToday(day);
-                const dayOfWeek = day.getDay();
-                const dayName = dayOfWeek === 0 ? 'SUN' : dayNames[dayOfWeek - 1];
-                
-                return (
-                  <div key={formatDateKey(day)} className="min-h-[300px] lg:min-h-[400px]">
-                    {/* Day Header */}
-                    <div className="text-center mb-4 pb-3 border-b border-gray-100 dark:border-gray-700">
-                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                        {dayName}
-                      </div>
-                      <div className={`text-2xl lg:text-3xl font-light ${
-                        isTodayDay 
-                          ? 'text-red-500 dark:text-red-400 font-medium' 
-                          : 'text-gray-800 dark:text-gray-200'
-                      }`}>
-                        {day.getDate()}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {monthNames[day.getMonth()].substring(0, 3).toUpperCase()}
-                      </div>
-                    </div>
+          {/* View All Button */}
+          <div className="flex justify-center mt-10">
+            <a
+              href="/agenda"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-500 dark:text-cyan-400 hover:underline underline-offset-4 decoration-2 transition-all duration-200"
+            >
+              Lihat Semua Agenda
+              <ChevronRight className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </section>
 
-                    {/* Events */}
-                    <div className="space-y-3">
-                      {events.length === 0 ? (
-                        <div className="text-center py-8">
-                          <div className="text-gray-400 dark:text-gray-600 text-sm">
-                            No events
-                          </div>
-                        </div>
-                      ) : (
-                        events.map((event) => (
-                          <button
-                            key={event.id}
-                            className="w-full text-left bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 group"
-                            onClick={() => handleEventClick(event)}
-                          >
-                            {/* Time */}
-                            <div className="flex items-center text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                              <Clock className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
-                              <span className="truncate">
-                                {formatTime(event.startDate)}
-                                {event.endDate && ` - ${formatTime(event.endDate)}`}
-                              </span>
-                            </div>
-                            
-                            {/* Title */}
-                            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 leading-tight mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-3">
-                              {event.title}
-                            </h3>
+      {/* Event Detail Modal */}
+      {selectedEvent && (
+        <EventModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+      )}
+    </>
+  )
+}
 
-                            {/* Description */}
-                            {event.description && (
-                              <p className="text-xs text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-                                {event.description}
-                              </p>
-                            )}
-                            
-                            {/* Meta Info */}
-                            <div className="space-y-1">
-                              {event.location && (
-                                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                                  <MapPin className="w-3 h-3 mr-2 flex-shrink-0" />
-                                  <span className="truncate">{event.location}</span>
-                                </div>
-                              )}
-                              {event.instructor && (
-                                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                                  <User className="w-3 h-3 mr-2 flex-shrink-0" />
-                                  <span className="truncate">{event.instructor}</span>
-                                </div>
-                              )}
-                            </div>
-                          </button>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+/* ─── Sub-components ─── */
+
+function SectionHeader() {
+  return (
+    <div className="mb-12">
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+        Agenda
+      </h2>
+      <p className="text-base text-gray-500 dark:text-gray-400 mt-1">
+        Jadwal kegiatan dan acara resmi Bakorwil III Malang
+      </p>
+    </div>
+  )
+}
+
+function AgendaCard({ event, onClick }: { event: AgendaItem; onClick: () => void }) {
+  const date = createSafeDate(event.startDate)
+  if (!date) return null
+
+  const time = formatTime(event.startDate)
+  const endTime = event.endDate ? formatTime(event.endDate) : null
+
+  return (
+    <button
+      onClick={onClick}
+      className="group w-full text-left rounded-xl transition-all duration-300 hover:-translate-y-0.5 overflow-hidden"
+    >
+      <div className="p-5 sm:p-6 flex gap-5">
+        {/* Date Box */}
+        <div className="flex-shrink-0 w-[72px] h-[84px] bg-cyan-500 group-hover:bg-cyan-600 rounded-lg flex flex-col items-center justify-center transition-colors duration-300 shadow-sm">
+          <span className="text-2xl font-bold text-white leading-none">
+            {String(date.getDate()).padStart(2, '0')}
+          </span>
+          <span className="text-[11px] font-semibold text-cyan-100 uppercase tracking-wider mt-1">
+            {MONTH_SHORT_ID[date.getMonth()]}
+          </span>
+          <span className="text-[10px] text-cyan-200 leading-none mt-0.5">
+            {date.getFullYear()}
+          </span>
+        </div>
+
+        {/* Details */}
+        <div className="flex-1 min-w-0 flex flex-col justify-between">
+          {time && (
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+              <Clock className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+              <span>{time}{endTime && ` – ${endTime}`}</span>
             </div>
+          )}
+
+          <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition-colors duration-200">
+            {event.title}
+          </h3>
+
+          {event.location && (
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+              <MapPin className="w-3.5 h-3.5 mr-1.5 flex-shrink-0 text-cyan-500 dark:text-cyan-400" />
+              <span className="truncate">{event.location}</span>
+            </div>
+          )}
+
+          <div className="flex items-center text-xs font-medium text-cyan-500 dark:text-cyan-400 mt-2.5 group-hover:translate-x-1 transition-transform duration-200">
+            <span className="group-hover:underline underline-offset-2">Selengkapnya</span>
+            <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
           </div>
         </div>
       </div>
+    </button>
+  )
+}
 
-      {/* Event Detail Modal */}
-      {showModal && selectedEvent && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-          onClick={closeModal}
-        >
-          <div 
-            className="bg-white dark:bg-gray-800 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
+function EventModal({ event, onClose }: { event: AgendaItem; onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="relative p-6 pb-4">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            aria-label="Tutup modal"
           >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                Event Details
-              </h2>
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                aria-label="Close modal"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            
-            {/* Modal Content */}
-            <div className="p-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4 leading-tight">
-                {selectedEvent.title}
-              </h3>
-              
-              {selectedEvent.description && (
-                <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-                  {selectedEvent.description}
-                </p>
-              )}
-              
-              <div className="space-y-4">
-                {/* Date & Time */}
-                <div className="flex items-start gap-3">
-                  <Clock className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-gray-100">
-                      {(() => {
-                        const date = createSafeDate(selectedEvent.startDate);
-                        return date ? date.toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        }) : 'Invalid date';
-                      })()}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      {formatTime(selectedEvent.startDate)}
-                      {selectedEvent.endDate && ` - ${formatTime(selectedEvent.endDate)}`}
-                    </div>
-                  </div>
-                </div>
+            <X className="w-5 h-5" />
+          </button>
 
-                {/* Location */}
-                {selectedEvent.location && (
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
-                    <div className="font-medium text-gray-900 dark:text-gray-100">
-                      {selectedEvent.location}
-                    </div>
-                  </div>
-                )}
+          <div className="inline-flex items-center gap-2 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 px-3 py-1.5 rounded-full text-xs font-medium mb-4">
+            <Calendar className="w-3.5 h-3.5" />
+            {formatFullDate(event.startDate)}
+          </div>
 
-                {/* Instructor */}
-                {selectedEvent.instructor && (
-                  <div className="flex items-start gap-3">
-                    <User className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-gray-100">
-                        {selectedEvent.instructor}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        Instructor
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Modal Footer */}
-            <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-              <button
-                onClick={closeModal}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Close
-              </button>
-            </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight pr-8">
+            {event.title}
+          </h2>
+        </div>
+
+        {/* Content */}
+        <div className="px-6 pb-6">
+          {event.description && (
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 text-sm">
+              {event.description}
+            </p>
+          )}
+
+          <div className="space-y-3">
+            <InfoRow
+              icon={<Clock className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />}
+              label="Waktu"
+              value={`${formatTime(event.startDate)}${event.endDate ? ` – ${formatTime(event.endDate)}` : ''}`}
+            />
+            {event.location && (
+              <InfoRow
+                icon={<MapPin className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />}
+                label="Lokasi"
+                value={event.location}
+              />
+            )}
           </div>
         </div>
-      )}
-    </>
-  );
-};
 
-export default AgendaBlock;
+        {/* Footer */}
+        <div className="px-6 pb-6">
+          <button
+            onClick={onClose}
+            className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-3 px-4 rounded-xl transition-colors duration-200 font-semibold text-sm shadow-sm hover:shadow-md"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+      <div className="w-9 h-9 bg-cyan-100 dark:bg-cyan-900/40 rounded-lg flex items-center justify-center flex-shrink-0">
+        {icon}
+      </div>
+      <div>
+        <div className="text-xs text-gray-500 dark:text-gray-400">{label}</div>
+        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{value}</div>
+      </div>
+    </div>
+  )
+}
+
+export default AgendaBlock

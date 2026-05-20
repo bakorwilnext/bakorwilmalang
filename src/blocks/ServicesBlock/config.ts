@@ -1,17 +1,65 @@
 import type { Block } from 'payload'
 
-import {
-  FixedToolbarFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
+const ICON_OPTIONS = [
+  // Pemerintahan & Koordinasi
+  { label: 'Landmark (Pemerintahan)', value: 'landmark' },
+  { label: 'Building (Gedung/Kantor)', value: 'building' },
+  { label: 'Briefcase (Dinas/Jabatan)', value: 'briefcase' },
+  { label: 'Handshake (Koordinasi)', value: 'handshake' },
+  { label: 'Users (Masyarakat/Tim)', value: 'users' },
+  { label: 'UserCheck (Verifikasi)', value: 'user-check' },
+
+  // Layanan Publik
+  { label: 'FileText (Dokumen/Surat)', value: 'file-text' },
+  { label: 'FileBadge (Sertifikat)', value: 'file-badge' },
+  { label: 'ClipboardList (Administrasi)', value: 'clipboard-list' },
+  { label: 'ScrollText (Regulasi/Peraturan)', value: 'scroll-text' },
+  { label: 'Scale (Hukum)', value: 'scale' },
+  { label: 'ShieldCheck (Keamanan/Perizinan)', value: 'shield-check' },
+
+  // Informasi & Komunikasi
+  { label: 'Info (Informasi)', value: 'info' },
+  { label: 'Megaphone (Pengumuman)', value: 'megaphone' },
+  { label: 'Newspaper (Berita/PPID)', value: 'newspaper' },
+  { label: 'Mail (Surat/Korespondensi)', value: 'mail' },
+  { label: 'Phone (Kontak)', value: 'phone' },
+  { label: 'Globe (Website/Portal)', value: 'globe' },
+
+  // Pembangunan & Infrastruktur
+  { label: 'HardHat (Pembangunan)', value: 'hard-hat' },
+  { label: 'MapPin (Lokasi/Wilayah)', value: 'map-pin' },
+  { label: 'Map (Peta Wilayah)', value: 'map' },
+  { label: 'Route (Infrastruktur Jalan)', value: 'route' },
+  { label: 'Droplets (Air/Sumber Daya)', value: 'droplets' },
+  { label: 'Leaf (Lingkungan)', value: 'leaf' },
+
+  // Pendidikan & Sosial
+  { label: 'GraduationCap (Pendidikan)', value: 'graduation-cap' },
+  { label: 'HeartPulse (Kesehatan)', value: 'heart-pulse' },
+  { label: 'BookOpen (Pembelajaran)', value: 'book-open' },
+  { label: 'Award (Penghargaan)', value: 'award' },
+
+  // Keuangan & Data
+  { label: 'BarChart3 (Statistik/Data)', value: 'bar-chart-3' },
+  { label: 'PieChart (Anggaran)', value: 'pie-chart' },
+  { label: 'TrendingUp (Perkembangan)', value: 'trending-up' },
+  { label: 'Database (Basis Data)', value: 'database' },
+
+  // Umum
+  { label: 'Settings (Pengaturan)', value: 'settings' },
+  { label: 'Calendar (Agenda/Jadwal)', value: 'calendar' },
+  { label: 'Clock (Waktu/Jam Kerja)', value: 'clock' },
+  { label: 'Download (Unduh)', value: 'download' },
+  { label: 'ExternalLink (Tautan Luar)', value: 'external-link' },
+  { label: 'Star (Unggulan)', value: 'star' },
+]
 
 export const ServicesBlock: Block = {
   slug: 'servicesBlock',
   interfaceName: 'ServicesBlock',
   labels: {
-    singular: 'Services Block',
-    plural: 'Services Blocks',
+    singular: 'Layanan Block',
+    plural: 'Layanan Blocks',
   },
   fields: [
     {
@@ -20,170 +68,108 @@ export const ServicesBlock: Block = {
         {
           name: 'sectionTitle',
           type: 'text',
-          label: 'Section Title',
-          required: false,
+          label: 'Judul Section',
+          defaultValue: 'Layanan',
           admin: {
             width: '50%',
-            placeholder: 'e.g., Our Services',
+            placeholder: 'contoh: Layanan Kami',
           },
         },
         {
           name: 'sectionSubtitle',
           type: 'text',
-          label: 'Section Subtitle',
-          required: false,
+          label: 'Subjudul Section',
           admin: {
             width: '50%',
-            placeholder: 'e.g., What we offer to help you succeed',
+            placeholder: 'contoh: Layanan publik yang kami sediakan',
           },
         },
       ],
     },
     {
-      name: 'introContent',
-      type: 'richText',
-      editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [
-            ...rootFeatures,
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-          ]
-        },
-      }),
-      label: 'Introduction Content',
-      required: false,
-      admin: {
-        description: 'Optional rich text content to display below the section title and subtitle',
-      },
-    },
-    {
       name: 'services',
       type: 'array',
-      label: 'Services',
+      label: 'Daftar Layanan',
       minRows: 1,
-      maxRows: 20,
+      maxRows: 12,
       labels: {
-        singular: 'Service',
-        plural: 'Services',
-      },
-      admin: {
-        description: 'Add the services you want to showcase. On mobile, 2 cards per row will be displayed.',
+        singular: 'Layanan',
+        plural: 'Layanan',
       },
       fields: [
         {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
+          name: 'icon',
+          type: 'select',
+          label: 'Ikon',
           required: true,
-          label: 'Service Image',
+          defaultValue: 'briefcase',
+          options: ICON_OPTIONS,
           admin: {
-            description: 'Upload an image that represents this service. Recommended aspect ratio: 4:3 or 3:2',
+            description: 'Pilih ikon yang merepresentasikan layanan ini',
           },
         },
         {
-          type: 'row',
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-              required: true,
-              label: 'Service Title',
-              admin: {
-                width: '60%',
-                placeholder: 'e.g., Web Development',
-              },
-            },
-            {
-              name: 'subtitle',
-              type: 'text',
-              required: false,
-              label: 'Service Subtitle',
-              admin: {
-                width: '40%',
-                placeholder: 'e.g., Professional & Modern',
-              },
-            },
-          ],
+          name: 'title',
+          type: 'text',
+          required: true,
+          label: 'Nama Layanan',
+          admin: {
+            placeholder: 'contoh: Layanan PPID',
+          },
         },
         {
           name: 'description',
           type: 'textarea',
-          required: false,
-          label: 'Service Description',
+          label: 'Deskripsi Singkat',
           admin: {
-            placeholder: 'Brief description of the service (keep it concise for better mobile display)',
-            rows: 3,
+            placeholder: 'Deskripsi singkat layanan (1-2 kalimat)',
+            rows: 2,
           },
         },
         {
           name: 'link',
           type: 'group',
-          label: 'Optional Link',
-          admin: {
-            description: 'Add a link to make this service card clickable',
-          },
+          label: 'Link (Opsional)',
           fields: [
             {
               name: 'type',
               type: 'radio',
-              label: 'Link Type',
+              label: 'Tipe Link',
               options: [
-                {
-                  label: 'Internal Link (to a page or post)',
-                  value: 'reference',
-                },
-                {
-                  label: 'External URL',
-                  value: 'custom',
-                },
+                { label: 'Link Internal', value: 'reference' },
+                { label: 'URL Eksternal', value: 'custom' },
               ],
               defaultValue: 'reference',
-              admin: {
-                layout: 'horizontal',
-              },
+              admin: { layout: 'horizontal' },
             },
             {
               name: 'reference',
               type: 'relationship',
               relationTo: ['pages', 'posts'],
-              label: 'Document to Link to',
+              label: 'Halaman Tujuan',
               maxDepth: 1,
               admin: {
-                condition: (data, siblingData) => siblingData?.type === 'reference',
-                description: 'Select a page or post to link to',
+                condition: (_, siblingData) => siblingData?.type === 'reference',
               },
             },
             {
               name: 'url',
               type: 'text',
-              label: 'External URL',
-              required: false,
+              label: 'URL Eksternal',
               admin: {
-                condition: (data, siblingData) => siblingData?.type === 'custom',
-                placeholder: 'https://example.com',
-                description: 'Enter the complete URL including https://',
+                condition: (_, siblingData) => siblingData?.type === 'custom',
+                placeholder: 'https://...',
               },
             },
             {
               name: 'newTab',
               type: 'checkbox',
-              label: 'Open in new tab',
+              label: 'Buka di tab baru',
               defaultValue: false,
-              admin: {
-                description: 'Check this to open the link in a new browser tab',
-              },
             },
           ],
         },
       ],
     },
   ],
-  // admin: {
-  //   preview: (doc) => {
-  //     const servicesCount = doc?.services?.length || 0
-  //     const title = doc?.sectionTitle || 'Services Block'
-  //     return `${title} (${servicesCount} service${servicesCount !== 1 ? 's' : ''})`
-  //   },
-  // },
 }

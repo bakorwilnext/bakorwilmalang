@@ -104,7 +104,7 @@ export const CustomHeroClient: React.FC<CustomHeroClientProps> = ({ media, richT
   }, [currentIndex, carouselItems, isCarouselVisible])
 
   return (
-    <div className="relative w-full overflow-visible" data-theme="dark">
+    <div className="relative w-full overflow-visible bg-cyan-500">
       <div className="relative w-full h-[60vh] overflow-hidden">
         {media && typeof media === 'object' && (
           <Media
@@ -137,7 +137,7 @@ export const CustomHeroClient: React.FC<CustomHeroClientProps> = ({ media, richT
           <div className="flex items-center justify-center relative w-full">
             {carouselItems.length > 1 && (
               <button
-                className="absolute -left-5 bg-white/70 hover:bg-blue-500 text-gray-800 hover:text-white border-none rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-blue-500 dark:hover:text-white"
+                className="absolute -left-5 bg-white/70 hover:bg-cyan-500 text-gray-800 hover:text-white border-none rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-blue-500 dark:hover:text-white"
                 onClick={prevSlide}
                 aria-label="Previous slide"
                 type="button"
