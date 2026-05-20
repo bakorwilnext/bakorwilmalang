@@ -137,7 +137,7 @@ export const CustomHeroClient: React.FC<CustomHeroClientProps> = ({ media, richT
           <div className="flex items-center justify-center relative w-full">
             {carouselItems.length > 1 && (
               <button
-                className="absolute -left-5 bg-white/70 hover:bg-cyan-500 text-gray-800 hover:text-white border-none rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-blue-500 dark:hover:text-white"
+                className="absolute left-2 sm:-left-5 bg-white/70 hover:bg-cyan-500 text-gray-800 hover:text-white border-none rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-cyan-500 dark:hover:text-white"
                 onClick={prevSlide}
                 aria-label="Previous slide"
                 type="button"
@@ -181,7 +181,7 @@ export const CustomHeroClient: React.FC<CustomHeroClientProps> = ({ media, richT
 
             {carouselItems.length > 1 && (
               <button
-                className="absolute -right-5 bg-white/70 hover:bg-blue-500 text-gray-800 hover:text-white border-none rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-blue-500 dark:hover:text-white"
+                className="absolute right-2 sm:-right-5 bg-white/70 hover:bg-cyan-500 text-gray-800 hover:text-white border-none rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 z-10 dark:bg-gray-800/70 dark:text-gray-200 dark:hover:bg-cyan-500 dark:hover:text-white"
                 onClick={nextSlide}
                 aria-label="Next slide"
                 type="button"
@@ -204,7 +204,7 @@ export const CustomHeroClient: React.FC<CustomHeroClientProps> = ({ media, richT
                   <span
                     className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                       index === currentIndex
-                        ? 'bg-blue-500 scale-110'
+                        ? 'bg-cyan-500 scale-110'
                         : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   />
