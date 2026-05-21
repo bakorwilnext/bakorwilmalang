@@ -1,13 +1,10 @@
 'use client'
 import React from 'react'
-import { format, differenceInDays, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths } from 'date-fns'
-import { cn } from '@/utilities/ui'
 import type { Internship } from '@/payload-types'
 
 interface InternshipAnalyticsProps {
   internships: Internship[]
   className?: string
-  showCharts?: boolean
 }
 
 interface AnalyticsData {
@@ -23,10 +20,18 @@ interface AnalyticsData {
   averageDuration: number
 }
 
+const INDONESIAN_MONTHS = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+  'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+]
+
+function formatMonthYear(date: Date): string {
+  return `${INDONESIAN_MONTHS[date.getMonth()]} ${date.getFullYear()}`
+}
+
 export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
   internships,
   className,
-  showCharts = true,
 }) => {
   const analytics = React.useMemo((): AnalyticsData => {
     const totalInterns = internships.length
@@ -34,13 +39,11 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
     const upcomingInterns = internships.filter(i => i.status === 'upcoming').length
     const completedInterns = internships.filter(i => i.status === 'completed').length
 
-    // Calculate average rating
     const ratedInterns = internships.filter(i => i.rating && i.rating > 0)
-    const averageRating = ratedInterns.length > 0 
-      ? ratedInterns.reduce((sum, i) => sum + (i.rating || 0), 0) / ratedInterns.length 
+    const averageRating = ratedInterns.length > 0
+      ? ratedInterns.reduce((sum, i) => sum + (i.rating || 0), 0) / ratedInterns.length
       : 0
 
-    // Top schools
     const schoolCounts = internships.reduce((acc, intern) => {
       acc[intern.school] = (acc[intern.school] || 0) + 1
       return acc
@@ -50,7 +53,6 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
       .sort((a, b) => b.count - a.count)
       .slice(0, 5)
 
-    // Top faculties
     const facultyCounts = internships.reduce((acc, intern) => {
       acc[intern.faculty] = (acc[intern.faculty] || 0) + 1
       return acc
@@ -60,35 +62,36 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
       .sort((a, b) => b.count - a.count)
       .slice(0, 5)
 
-    // Monthly data for the last 12 months
-    const endDate = new Date()
-    const startDate = subMonths(endDate, 11)
-    const months = eachMonthOfInterval({ start: startDate, end: endDate })
-    
+    const now = new Date()
+    const months: Date[] = []
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+      months.push(d)
+    }
+
     const monthlyData = months.map(month => {
-      const monthStart = startOfMonth(month)
-      const monthEnd = endOfMonth(month)
-      
+      const monthStart = new Date(month.getFullYear(), month.getMonth(), 1)
+      const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59, 999)
+
       const started = internships.filter(intern => {
-        const startDate = new Date(intern.startDate)
-        return startDate >= monthStart && startDate <= monthEnd
+        const sd = new Date(intern.startDate)
+        return sd >= monthStart && sd <= monthEnd
       }).length
 
       const completed = internships.filter(intern => {
-        const endDate = new Date(intern.endDate)
-        return endDate >= monthStart && endDate <= monthEnd
+        const ed = new Date(intern.endDate)
+        return ed >= monthStart && ed <= monthEnd
       }).length
 
       return {
-        month: format(month, 'MMM yyyy'),
+        month: formatMonthYear(month),
         started,
-        completed
+        completed,
       }
     })
 
-    // Department distribution
     const departmentCounts = internships.reduce((acc, intern) => {
-      const dept = intern.department || 'Unassigned'
+      const dept = intern.department || 'Belum Ditentukan'
       acc[dept] = (acc[dept] || 0) + 1
       return acc
     }, {} as Record<string, number>)
@@ -96,12 +99,11 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
       .map(([department, count]) => ({ department, count }))
       .sort((a, b) => b.count - a.count)
 
-    // Average duration
-    const durations = internships.map(intern => 
-      differenceInDays(new Date(intern.endDate), new Date(intern.startDate))
+    const durations = internships.map(intern =>
+      Math.round((new Date(intern.endDate).getTime() - new Date(intern.startDate).getTime()) / 86400000)
     )
-    const averageDuration = durations.length > 0 
-      ? durations.reduce((sum, duration) => sum + duration, 0) / durations.length 
+    const averageDuration = durations.length > 0
+      ? durations.reduce((sum, duration) => sum + duration, 0) / durations.length
       : 0
 
     return {
@@ -114,85 +116,31 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
       topFaculties,
       monthlyData,
       departmentDistribution,
-      averageDuration
+      averageDuration,
     }
   }, [internships])
 
-  const StatCard = ({ 
-    title, 
-    value, 
-    subtitle, 
-    color = 'cyan',
-    icon
-  }: { 
+  const StatCard = ({
+    title,
+    value,
+    subtitle,
+  }: {
     title: string
     value: string | number
     subtitle?: string
-    color?: 'cyan' | 'emerald' | 'amber' | 'violet' | 'rose' | 'blue'
-    icon?: string
   }) => {
-    const colorClasses = {
-      cyan: {
-        bg: 'bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-950 dark:to-cyan-900',
-        border: 'border-cyan-200 dark:border-cyan-800',
-        text: 'text-cyan-900 dark:text-cyan-100',
-        accent: 'text-cyan-600 dark:text-cyan-400'
-      },
-      emerald: {
-        bg: 'bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900',
-        border: 'border-emerald-200 dark:border-emerald-800',
-        text: 'text-emerald-900 dark:text-emerald-100',
-        accent: 'text-emerald-600 dark:text-emerald-400'
-      },
-      amber: {
-        bg: 'bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900',
-        border: 'border-amber-200 dark:border-amber-800',
-        text: 'text-amber-900 dark:text-amber-100',
-        accent: 'text-amber-600 dark:text-amber-400'
-      },
-      violet: {
-        bg: 'bg-gradient-to-br from-violet-50 to-violet-100 dark:from-violet-950 dark:to-violet-900',
-        border: 'border-violet-200 dark:border-violet-800',
-        text: 'text-violet-900 dark:text-violet-100',
-        accent: 'text-violet-600 dark:text-violet-400'
-      },
-      rose: {
-        bg: 'bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-950 dark:to-rose-900',
-        border: 'border-rose-200 dark:border-rose-800',
-        text: 'text-rose-900 dark:text-rose-100',
-        accent: 'text-rose-600 dark:text-rose-400'
-      },
-      blue: {
-        bg: 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900',
-        border: 'border-blue-200 dark:border-blue-800',
-        text: 'text-blue-900 dark:text-blue-100',
-        accent: 'text-blue-600 dark:text-blue-400'
-      }
-    }
-
-    const classes = colorClasses[color]
-
     return (
-      <div className={cn(
-        'p-4 sm:p-6 border rounded-xl shadow-sm hover:shadow-md transition-all duration-200',
-        classes.bg,
-        classes.border
-      )}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className={cn('text-xs sm:text-sm font-medium', classes.text, 'opacity-80')}>
+      <div className="p-4 sm:p-6 border rounded-xl border-cyan-200 dark:border-cyan-800 bg-cyan-50 dark:bg-cyan-900/20">
+        <div className="mb-3">
+          <h3 className="text-xs sm:text-sm font-medium text-cyan-900 dark:text-cyan-100 opacity-80">
             {title}
           </h3>
-          {icon && (
-            <span className={cn('text-lg sm:text-xl', classes.accent)}>
-              {icon}
-            </span>
-          )}
         </div>
-        <p className={cn('text-2xl sm:text-3xl font-bold mb-1', classes.text)}>
+        <p className="text-2xl sm:text-3xl font-bold mb-1 text-cyan-900 dark:text-cyan-100">
           {value}
         </p>
         {subtitle && (
-          <p className={cn('text-xs sm:text-sm', classes.text, 'opacity-70')}>
+          <p className="text-xs sm:text-sm text-cyan-900 dark:text-cyan-100 opacity-70">
             {subtitle}
           </p>
         )}
@@ -200,42 +148,38 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
     )
   }
 
-  const BarChart = ({ 
-    data, 
+  const BarChart = ({
+    data,
     title,
-    maxHeight = 100 
-  }: { 
+  }: {
     data: { label: string; value: number }[]
     title: string
-    maxHeight?: number
   }) => {
     const maxValue = Math.max(...data.map(d => d.value))
-    
-    // Calculate the minimum width needed for the longest label
+
     const maxLabelLength = Math.max(...data.map(d => d.label.length))
-    const minLabelWidth = Math.max(120, maxLabelLength * 8) // Base 120px or 8px per character
-    
+    const minLabelWidth = Math.max(120, maxLabelLength * 8)
+
     return (
-      <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
-        <h3 className="text-base sm:text-lg font-semibold mb-6 text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <span className="w-1 h-6 bg-gradient-to-b from-cyan-400 to-cyan-600 rounded-full"></span>
+      <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 border border-gray-200 dark:border-gray-700 rounded-xl">
+        <h3 className="text-base sm:text-lg font-semibold mb-6 text-gray-900 dark:text-gray-100">
           {title}
         </h3>
         <div className="space-y-4">
           {data.map((item, index) => (
             <div key={index} className="flex items-center gap-3 sm:gap-4">
-              <div 
-                className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 leading-tight flex-shrink-0" 
+              <div
+                className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 leading-tight flex-shrink-0"
                 style={{ minWidth: `${minLabelWidth}px` }}
                 title={item.label}
               >
                 {item.label}
               </div>
               <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-3 sm:h-4 relative overflow-hidden min-w-0">
-                <div 
-                  className="bg-gradient-to-r from-cyan-400 to-cyan-600 dark:from-cyan-500 dark:to-cyan-700 h-full rounded-full transition-all duration-500 ease-out shadow-sm"
-                  style={{ 
-                    width: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%` 
+                <div
+                  className="bg-cyan-500 h-full rounded-full transition-all duration-500 ease-out"
+                  style={{
+                    width: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%`,
                   }}
                 />
               </div>
@@ -249,10 +193,10 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
     )
   }
 
-  const LineChart = ({ 
+  const LineChart = ({
     data,
-    title 
-  }: { 
+    title,
+  }: {
     data: { month: string; started: number; completed: number }[]
     title: string
   }) => {
@@ -261,30 +205,29 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
     )
 
     return (
-      <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
-        <h3 className="text-base sm:text-lg font-semibold mb-6 text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <span className="w-1 h-6 bg-gradient-to-b from-cyan-400 to-cyan-600 rounded-full"></span>
+      <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 border border-gray-200 dark:border-gray-700 rounded-xl">
+        <h3 className="text-base sm:text-lg font-semibold mb-6 text-gray-900 dark:text-gray-100">
           {title}
         </h3>
-        <div className="flex items-end justify-between h-56 sm:h-64 gap-1 sm:gap-2 overflow-x-auto bg-gradient-to-t from-gray-50 to-transparent dark:from-gray-800 rounded-lg p-4">
+        <div className="flex items-end justify-between h-56 sm:h-64 gap-1 sm:gap-2 overflow-x-auto rounded-lg p-4">
           {data.map((item, index) => (
             <div key={index} className="flex flex-col items-center gap-2 flex-shrink-0 min-w-0">
               <div className="flex flex-col items-center justify-end h-44 sm:h-48 gap-1">
-                <div 
-                  className="bg-gradient-to-t from-cyan-500 to-cyan-400 dark:from-cyan-600 dark:to-cyan-500 w-4 sm:w-5 rounded-t-md transition-all duration-500 ease-out shadow-sm"
-                  style={{ 
+                <div
+                  className="bg-cyan-500 w-4 sm:w-5 rounded-t-md transition-all duration-500 ease-out"
+                  style={{
                     height: `${maxValue > 0 ? (item.started / maxValue) * 100 : 0}%`,
-                    minHeight: item.started > 0 ? '8px' : '0px'
+                    minHeight: item.started > 0 ? '8px' : '0px',
                   }}
-                  title={`Started: ${item.started}`}
+                  title={`Mulai: ${item.started}`}
                 />
-                <div 
-                  className="bg-gradient-to-t from-emerald-500 to-emerald-400 dark:from-emerald-600 dark:to-emerald-500 w-4 sm:w-5 rounded-t-md transition-all duration-500 ease-out shadow-sm"
-                  style={{ 
+                <div
+                  className="bg-cyan-300 w-4 sm:w-5 rounded-t-md transition-all duration-500 ease-out"
+                  style={{
                     height: `${maxValue > 0 ? (item.completed / maxValue) * 100 : 0}%`,
-                    minHeight: item.completed > 0 ? '8px' : '0px'
+                    minHeight: item.completed > 0 ? '8px' : '0px',
                   }}
-                  title={`Completed: ${item.completed}`}
+                  title={`Selesai: ${item.completed}`}
                 />
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 transform -rotate-45 origin-center whitespace-nowrap font-medium">
@@ -295,12 +238,12 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
         </div>
         <div className="flex justify-center gap-6 mt-6 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-gradient-to-r from-cyan-500 to-cyan-400 rounded shadow-sm"></div>
-            <span className="text-gray-700 dark:text-gray-300 font-medium">Started</span>
+            <div className="w-4 h-4 bg-cyan-500 rounded"></div>
+            <span className="text-gray-700 dark:text-gray-300 font-medium">Mulai</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-gradient-to-r from-emerald-500 to-emerald-400 rounded shadow-sm"></div>
-            <span className="text-gray-700 dark:text-gray-300 font-medium">Completed</span>
+            <div className="w-4 h-4 bg-cyan-300 rounded"></div>
+            <span className="text-gray-700 dark:text-gray-300 font-medium">Selesai</span>
           </div>
         </div>
       </div>
@@ -309,106 +252,84 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
 
   if (internships.length === 0) {
     return (
-      <div className={cn('space-y-6', className)}>
-        <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-          <div className="text-6xl mb-4">📊</div>
-          <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">No internship data available</p>
-          <p className="text-sm mt-2 text-gray-500 dark:text-gray-400">Add some internships to see analytics</p>
+      <div className={`space-y-6 ${className ?? ''}`}>
+        <div className="text-center py-16 bg-cyan-50 dark:bg-cyan-900/20 rounded-xl border border-cyan-200 dark:border-cyan-800">
+          <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">Belum ada data magang</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className={cn('space-y-6', className)}>
-      {/* Header */}
+    <div className={`space-y-6 ${className ?? ''}`}>
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-2 h-8 bg-gradient-to-b from-cyan-400 to-cyan-600 rounded-full"></div>
+        <div className="w-2 h-8 bg-cyan-500 rounded-full"></div>
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
-          Internship Analytics
+          Analitik Magang
         </h2>
       </div>
 
-      {/* Overview Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <StatCard 
-          title="Total Interns" 
+        <StatCard
+          title="Total Magang"
           value={analytics.totalInterns}
-          color="cyan"
-          icon="👥"
         />
-        <StatCard 
-          title="Current Interns" 
+        <StatCard
+          title="Magang Aktif"
           value={analytics.currentInterns}
-          color="emerald"
-          icon="🟢"
         />
-        <StatCard 
-          title="Upcoming Interns" 
+        <StatCard
+          title="Akan Datang"
           value={analytics.upcomingInterns}
-          color="amber"
-          icon="⏳"
         />
-        <StatCard 
-          title="Completed Interns" 
+        <StatCard
+          title="Selesai"
           value={analytics.completedInterns}
-          color="violet"
-          icon="✅"
         />
       </div>
 
-      {/* Additional Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-        <StatCard 
-          title="Average Rating" 
+        <StatCard
+          title="Rating Rata-rata"
           value={analytics.averageRating > 0 ? analytics.averageRating.toFixed(1) : 'N/A'}
-          subtitle={analytics.averageRating > 0 ? 'Out of 5.0' : 'No ratings yet'}
-          color="rose"
-          icon="⭐"
+          subtitle={analytics.averageRating > 0 ? 'Dari 5.0' : 'Belum ada rating'}
         />
-        <StatCard 
-          title="Average Duration" 
+        <StatCard
+          title="Durasi Rata-rata"
           value={Math.round(analytics.averageDuration)}
-          subtitle="Days"
-          color="blue"
-          icon="📅"
+          subtitle="Hari"
         />
-        <StatCard 
-          title="Active Departments" 
+        <StatCard
+          title="Divisi Aktif"
           value={analytics.departmentDistribution.length}
-          subtitle="Different departments"
-          color="cyan"
-          icon="🏢"
+          subtitle="Divisi berbeda"
         />
       </div>
 
-      {showCharts && analytics.totalInterns > 0 && (
+      {analytics.totalInterns > 0 && (
         <>
-          {/* Monthly Trends */}
           <div className="w-full">
-            <LineChart 
+            <LineChart
               data={analytics.monthlyData}
-              title="Monthly Internship Trends"
+              title="Tren Magang Bulanan"
             />
           </div>
 
-          {/* Charts Row */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <BarChart 
+            <BarChart
               data={analytics.topSchools.map(s => ({ label: s.school, value: s.count }))}
-              title="Top Schools"
+              title="Asal Kampus"
             />
-            <BarChart 
+            <BarChart
               data={analytics.topFaculties.map(f => ({ label: f.faculty, value: f.count }))}
-              title="Top Faculties"
+              title="Fakultas"
             />
           </div>
 
-          {/* Department Distribution */}
           <div className="w-full">
-            <BarChart 
+            <BarChart
               data={analytics.departmentDistribution.map(d => ({ label: d.department, value: d.count }))}
-              title="Department Distribution"
+              title="Distribusi Divisi"
             />
           </div>
         </>

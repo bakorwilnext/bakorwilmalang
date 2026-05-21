@@ -798,9 +798,6 @@ export interface Form {
  */
 export interface InternshipsBlock {
   title?: string | null;
-  /**
-   * Optional content to display above the internships table
-   */
   introContent?: {
     root: {
       type: string;
@@ -816,29 +813,11 @@ export interface InternshipsBlock {
     };
     [k: string]: unknown;
   } | null;
-  /**
-   * Display analytics and charts above the table
-   */
   showAnalytics?: boolean | null;
-  /**
-   * Filter which internships to display based on their status
-   */
   showStatus?: ('all' | 'current' | 'upcoming' | 'completed') | null;
-  /**
-   * Allow users to search through the internships
-   */
   showSearch?: boolean | null;
-  /**
-   * Show CSV and Excel export buttons
-   */
   showExport?: boolean | null;
-  /**
-   * Enable pagination for large lists
-   */
   showPagination?: boolean | null;
-  /**
-   * Number of internships to show per page
-   */
   itemsPerPage?: number | null;
   id?: string | null;
   blockName?: string | null;

@@ -1,7 +1,5 @@
 'use client'
 import React from 'react'
-import { format } from 'date-fns'
-import { cn } from '@/utilities/ui'
 import type { Internship, Media } from '@/payload-types'
 
 interface InternshipsTableProps {
@@ -14,16 +12,26 @@ interface InternshipsTableProps {
   showExport?: boolean
 }
 
+const BULAN = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+  'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+]
+
+const formatTanggal = (dateStr: string) => {
+  const d = new Date(dateStr)
+  return `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`
+}
+
 const statusColors = {
-  upcoming: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-700',
+  upcoming: 'bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 border-cyan-300 dark:border-cyan-600',
   current: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700',
   completed: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600',
 }
 
 const statusLabels = {
-  upcoming: 'Upcoming',
-  current: 'Current', 
-  completed: 'Completed',
+  upcoming: 'Akan Datang',
+  current: 'Aktif',
+  completed: 'Selesai',
 }
 
 export const InternshipsTable: React.FC<InternshipsTableProps> = ({
@@ -39,25 +47,14 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
   const [currentPage, setCurrentPage] = React.useState(1)
   const [sortField, setSortField] = React.useState<keyof Internship>('startDate')
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc')
-  const [isMobile, setIsMobile] = React.useState(false)
 
-  React.useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
-  // Filter internships based on status and search
   const filteredInternships = React.useMemo(() => {
     let filtered = internships
 
-    // Filter by status
     if (showStatus !== 'all') {
       filtered = filtered.filter(intern => intern.status === showStatus)
     }
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(intern =>
         intern.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,7 +65,6 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
       )
     }
 
-    // Sort internships
     filtered.sort((a, b) => {
       const aValue = a[sortField]
       const bValue = b[sortField]
@@ -86,7 +82,6 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
     return filtered
   }, [internships, showStatus, searchTerm, sortField, sortDirection])
 
-  // Pagination
   const totalPages = Math.ceil(filteredInternships.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedInternships = filteredInternships.slice(startIndex, startIndex + itemsPerPage)
@@ -110,15 +105,14 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
     return null
   }
 
-  // Export functions
   const exportToCSV = () => {
     const headers = [
-      'Name',
-      'School',
-      'Faculty', 
-      'Study Program',
-      'Start Date',
-      'End Date',
+      'Nama',
+      'Kampus',
+      'Fakultas',
+      'Prodi',
+      'Mulai',
+      'Selesai',
       'Status',
       'Department',
       'Supervisor',
@@ -132,8 +126,8 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
       intern.school,
       intern.faculty,
       intern.studyProgram,
-      format(new Date(intern.startDate), 'yyyy-MM-dd'),
-      format(new Date(intern.endDate), 'yyyy-MM-dd'),
+      new Date(intern.startDate).toISOString().slice(0, 10),
+      new Date(intern.endDate).toISOString().slice(0, 10),
       statusLabels[intern.status],
       intern.department || '',
       intern.supervisor || '',
@@ -151,7 +145,7 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
     link.setAttribute('href', url)
-    link.setAttribute('download', `internships_${format(new Date(), 'yyyy-MM-dd')}.csv`)
+    link.setAttribute('download', `internships_${new Date().toISOString().slice(0, 10)}.csv`)
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()
@@ -159,19 +153,18 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
   }
 
   const exportToExcel = async () => {
-    // Dynamic import to avoid SSR issues
     const XLSX = await import('xlsx')
-    
+
     const workbook = XLSX.utils.book_new()
-    
+
     const worksheetData = [
       [
-        'Name',
-        'School',
-        'Faculty',
-        'Study Program', 
-        'Start Date',
-        'End Date',
+        'Nama',
+        'Kampus',
+        'Fakultas',
+        'Prodi',
+        'Mulai',
+        'Selesai',
         'Status',
         'Department',
         'Supervisor',
@@ -184,8 +177,8 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
         intern.school,
         intern.faculty,
         intern.studyProgram,
-        format(new Date(intern.startDate), 'yyyy-MM-dd'),
-        format(new Date(intern.endDate), 'yyyy-MM-dd'),
+        new Date(intern.startDate).toISOString().slice(0, 10),
+        new Date(intern.endDate).toISOString().slice(0, 10),
         statusLabels[intern.status],
         intern.department || '',
         intern.supervisor || '',
@@ -197,23 +190,22 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
 
     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData)
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Internships')
-    XLSX.writeFile(workbook, `internships_${format(new Date(), 'yyyy-MM-dd')}.xlsx`)
+    XLSX.writeFile(workbook, `internships_${new Date().toISOString().slice(0, 10)}.xlsx`)
   }
 
   const SortIcon = ({ field }: { field: keyof Internship }) => (
     <span className="ml-1 text-gray-400">
       {sortField === field ? (
-        sortDirection === 'asc' ? '↑' : '↓'
+        sortDirection === 'asc' ? '\u2191' : '\u2193'
       ) : (
-        '↕'
+        '\u2195'
       )}
     </span>
   )
 
-  // Mobile Card View
   const MobileCard = ({ intern }: { intern: Internship }) => {
     const acceptanceLink = getAcceptanceLetterLink(intern)
-    
+
     return (
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-3 transition-colors duration-200">
         <div className="flex justify-between items-start">
@@ -221,30 +213,27 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">{intern.name}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">{intern.school}</p>
           </div>
-          <span className={cn(
-            'inline-flex px-2 py-1 text-xs font-semibold rounded-full border',
-            statusColors[intern.status]
-          )}>
+          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${statusColors[intern.status]}`}>
             {statusLabels[intern.status]}
           </span>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Faculty</p>
+            <p className="text-gray-500 dark:text-gray-400">Fakultas</p>
             <p className="font-medium text-gray-900 dark:text-gray-100">{intern.faculty}</p>
           </div>
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Program</p>
+            <p className="text-gray-500 dark:text-gray-400">Prodi</p>
             <p className="font-medium text-gray-900 dark:text-gray-100">{intern.studyProgram}</p>
           </div>
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Start Date</p>
-            <p className="font-medium text-gray-900 dark:text-gray-100">{format(new Date(intern.startDate), 'MMM dd, yyyy')}</p>
+            <p className="text-gray-500 dark:text-gray-400">Mulai</p>
+            <p className="font-medium text-gray-900 dark:text-gray-100">{formatTanggal(intern.startDate)}</p>
           </div>
           <div>
-            <p className="text-gray-500 dark:text-gray-400">End Date</p>
-            <p className="font-medium text-gray-900 dark:text-gray-100">{format(new Date(intern.endDate), 'MMM dd, yyyy')}</p>
+            <p className="text-gray-500 dark:text-gray-400">Selesai</p>
+            <p className="font-medium text-gray-900 dark:text-gray-100">{formatTanggal(intern.endDate)}</p>
           </div>
         </div>
 
@@ -254,9 +243,9 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
               href={acceptanceLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-200 underline text-sm"
+              className="text-cyan-500 dark:text-cyan-400 hover:text-cyan-900 dark:hover:text-cyan-300 underline text-sm"
             >
-              View Acceptance Letter
+              Lihat Surat Penerimaan
             </a>
           </div>
         )}
@@ -265,173 +254,163 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
   }
 
   return (
-    <div className={cn('space-y-4', className)}>
-      {/* Header with search and export */}
+    <div className={`space-y-4${className ? ` ${className}` : ''}`}>
       <div className="flex flex-col sm:flex-row gap-4 items-start justify-between">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Internships</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Data Magang</h2>
           {showSearch && (
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <input
                 type="text"
-                placeholder="Search interns..."
+                placeholder="Cari magang..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors duration-200"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 transition-colors duration-200"
               />
               <span className="text-sm text-gray-500 dark:text-gray-400 self-center">
-                {filteredInternships.length} of {internships.length} interns
+                {filteredInternships.length} dari {internships.length} magang
               </span>
             </div>
           )}
         </div>
-        
+
         {showExport && (
           <div className="flex gap-2 w-full sm:w-auto">
             <button
               onClick={exportToCSV}
-              className="flex-1 sm:flex-none px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm transition-colors duration-200"
+              className="flex-1 sm:flex-none px-4 py-2 bg-cyan-500 dark:bg-cyan-600 text-white rounded-md hover:bg-cyan-600 dark:hover:bg-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm transition-colors duration-200"
             >
-              Export CSV
+              Ekspor CSV
             </button>
             <button
               onClick={exportToExcel}
-              className="flex-1 sm:flex-none px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-colors duration-200"
+              className="flex-1 sm:flex-none px-4 py-2 bg-cyan-500 dark:bg-cyan-600 text-white rounded-md hover:bg-cyan-600 dark:hover:bg-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm transition-colors duration-200"
             >
-              Export Excel
+              Ekspor Excel
             </button>
           </div>
         )}
       </div>
 
-      {/* Mobile Card View */}
-      {isMobile ? (
-        <div className="space-y-4">
-          {paginatedInternships.map((intern) => (
-            <MobileCard key={intern.id} intern={intern} />
-          ))}
-        </div>
-      ) : (
-        /* Desktop Table View */
-        <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 transition-colors duration-200">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-800">
-              <tr>
-                <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                  onClick={() => handleSort('name')}
-                >
-                  Name <SortIcon field="name" />
-                </th>
-                <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                  onClick={() => handleSort('school')}
-                >
-                  School <SortIcon field="school" />
-                </th>
-                <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                  onClick={() => handleSort('faculty')}
-                >
-                  Faculty <SortIcon field="faculty" />
-                </th>
-                <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                  onClick={() => handleSort('studyProgram')}
-                >
-                  Study Program <SortIcon field="studyProgram" />
-                </th>
-                <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                  onClick={() => handleSort('startDate')}
-                >
-                  Start Date <SortIcon field="startDate" />
-                </th>
-                <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                  onClick={() => handleSort('endDate')}
-                >
-                  End Date <SortIcon field="endDate" />
-                </th>
-                <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                  onClick={() => handleSort('status')}
-                >
-                  Status <SortIcon field="status" />
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Acceptance Letter
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-              {paginatedInternships.map((intern) => {
-                const acceptanceLink = getAcceptanceLetterLink(intern)
-                return (
-                  <tr key={intern.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{intern.name}</div>
-                      {intern.contactEmail && (
-                        <div className="text-sm text-gray-500 dark:text-gray-400">{intern.contactEmail}</div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                      {intern.school}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                      {intern.faculty}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                      {intern.studyProgram}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                      {format(new Date(intern.startDate), 'MMM dd, yyyy')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                      {format(new Date(intern.endDate), 'MMM dd, yyyy')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={cn(
-                        'inline-flex px-2 py-1 text-xs font-semibold rounded-full border',
-                        statusColors[intern.status]
-                      )}>
-                        {statusLabels[intern.status]}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {acceptanceLink ? (
-                        <a
-                          href={acceptanceLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-200 underline transition-colors duration-200"
-                        >
-                          View Letter
-                        </a>
-                      ) : (
-                        <span className="text-gray-400 dark:text-gray-500">Not available</span>
-                      )}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="space-y-4 md:hidden">
+        {paginatedInternships.map((intern) => (
+          <MobileCard key={intern.id} intern={intern} />
+        ))}
+      </div>
 
-      {/* Empty state */}
+      <div className="hidden md:block overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 transition-colors duration-200">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-800">
+            <tr>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                onClick={() => handleSort('name')}
+              >
+                Nama <SortIcon field="name" />
+              </th>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                onClick={() => handleSort('school')}
+              >
+                Kampus <SortIcon field="school" />
+              </th>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                onClick={() => handleSort('faculty')}
+              >
+                Fakultas <SortIcon field="faculty" />
+              </th>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                onClick={() => handleSort('studyProgram')}
+              >
+                Prodi <SortIcon field="studyProgram" />
+              </th>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                onClick={() => handleSort('startDate')}
+              >
+                Mulai <SortIcon field="startDate" />
+              </th>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                onClick={() => handleSort('endDate')}
+              >
+                Selesai <SortIcon field="endDate" />
+              </th>
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                onClick={() => handleSort('status')}
+              >
+                Status <SortIcon field="status" />
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Surat Penerimaan
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+            {paginatedInternships.map((intern) => {
+              const acceptanceLink = getAcceptanceLetterLink(intern)
+              return (
+                <tr key={intern.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{intern.name}</div>
+                    {intern.contactEmail && (
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{intern.contactEmail}</div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    {intern.school}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    {intern.faculty}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    {intern.studyProgram}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    {formatTanggal(intern.startDate)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    {formatTanggal(intern.endDate)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${statusColors[intern.status]}`}>
+                      {statusLabels[intern.status]}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {acceptanceLink ? (
+                      <a
+                        href={acceptanceLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-cyan-500 dark:text-cyan-400 hover:text-cyan-900 dark:hover:text-cyan-300 underline transition-colors duration-200"
+                      >
+                        Lihat Surat
+                      </a>
+                    ) : (
+                      <span className="text-gray-400 dark:text-gray-500">Belum tersedia</span>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
       {filteredInternships.length === 0 && (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-          {searchTerm ? 'No interns found matching your search.' : 'No interns found.'}
+          {searchTerm ? 'Tidak ada data magang yang sesuai.' : 'Belum ada data magang.'}
         </div>
       )}
 
-      {/* Pagination */}
       {showPagination && totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredInternships.length)} of {filteredInternships.length} results
+            Menampilkan {startIndex + 1} sampai {Math.min(startIndex + itemsPerPage, filteredInternships.length)} dari {filteredInternships.length} hasil
           </div>
           <div className="flex space-x-2">
             <button
@@ -439,7 +418,7 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
               disabled={currentPage === 1}
               className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200"
             >
-              Previous
+              Sebelumnya
             </button>
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i
@@ -447,12 +426,11 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={cn(
-                    'px-3 py-1 border rounded-md transition-colors duration-200',
+                  className={`px-3 py-1 border rounded-md transition-colors duration-200 ${
                     currentPage === page
-                      ? 'bg-blue-500 dark:bg-blue-600 text-white border-blue-500 dark:border-blue-600'
+                      ? 'bg-cyan-500 dark:bg-cyan-600 text-white border-cyan-500 dark:border-cyan-600'
                       : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100'
-                  )}
+                  }`}
                 >
                   {page}
                 </button>
@@ -463,7 +441,7 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
               disabled={currentPage === totalPages}
               className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200"
             >
-              Next
+              Selanjutnya
             </button>
           </div>
         </div>
