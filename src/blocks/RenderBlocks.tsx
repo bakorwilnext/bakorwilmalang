@@ -11,6 +11,9 @@ import { InternshipsBlock } from '@/blocks/InternshipsBlock/Component'
 import { AnalyticsBlock } from '@/blocks/AnalyticsBlock/Component'
 import { ServicesBlock } from '@/blocks/ServicesBlock/Component'
 import { default as AgendaBlock } from './AgendaBlock/Component'
+import { DocumentTableBlock } from '@/blocks/DocumentTableBlock/Component'
+import { GalleryBlock } from '@/blocks/GalleryBlock/Component'
+import { MapBlock } from '@/blocks/MapBlock/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -22,6 +25,9 @@ const blockComponents = {
   analyticsBlock: AnalyticsBlock,
   servicesBlock: ServicesBlock,
   agendaBlock: AgendaBlock,
+  documentTableBlock: DocumentTableBlock,
+  galleryBlock: GalleryBlock,
+  mapBlock: MapBlock,
 }
 
 // Blocks with full-width backgrounds that should render flush (no outer margin)
