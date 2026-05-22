@@ -12,6 +12,9 @@ import { ServicesBlock } from '@/blocks/ServicesBlock/config'
 import { InternshipsBlock } from '../../blocks/InternshipsBlock/config'
 import { AnalyticsBlock } from '../../blocks/AnalyticsBlock/config'
 import { AgendaBlock } from '@/blocks/AgendaBlock/config'
+import { DocumentTableBlock } from '@/blocks/DocumentTableBlock/config'
+import { GalleryBlock } from '@/blocks/GalleryBlock/config'
+import { MapBlock } from '@/blocks/MapBlock/config'
 
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
@@ -83,7 +86,7 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, InternshipsBlock, AnalyticsBlock, ServicesBlock, AgendaBlock],
+              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, InternshipsBlock, AnalyticsBlock, ServicesBlock, AgendaBlock, DocumentTableBlock, GalleryBlock, MapBlock],
               required: true,
               admin: {
                 initCollapsed: true,

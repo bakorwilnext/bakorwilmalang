@@ -262,13 +262,6 @@ export const InternshipAnalytics: React.FC<InternshipAnalyticsProps> = ({
 
   return (
     <div className={`space-y-6 ${className ?? ''}`}>
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-2 h-8 bg-cyan-500 rounded-full"></div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
-          Analitik Magang
-        </h2>
-      </div>
-
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard
           title="Total Magang"

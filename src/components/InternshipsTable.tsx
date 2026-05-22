@@ -257,7 +257,6 @@ export const InternshipsTable: React.FC<InternshipsTableProps> = ({
     <div className={`space-y-4${className ? ` ${className}` : ''}`}>
       <div className="flex flex-col sm:flex-row gap-4 items-start justify-between">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Data Magang</h2>
           {showSearch && (
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <input

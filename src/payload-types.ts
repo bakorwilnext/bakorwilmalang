@@ -214,6 +214,9 @@ export interface Page {
     | AnalyticsBlock
     | ServicesBlock
     | AgendaBlock
+    | DocumentTableBlock
+    | GalleryBlock
+    | MapBlock
   )[];
   meta?: {
     title?: string | null;
@@ -948,6 +951,71 @@ export interface AgendaBlock {
   blockType: 'agendaBlock';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DocumentTableBlock".
+ */
+export interface DocumentTableBlock {
+  title?: string | null;
+  columns?:
+    | {
+        label: string;
+        type: 'text' | 'link';
+        id?: string | null;
+      }[]
+    | null;
+  rows?:
+    | {
+        cells?:
+          | {
+              value: string;
+              /**
+               * Isi URL jika kolom ini bertipe "Tautan"
+               */
+              url?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'documentTableBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryBlock".
+ */
+export interface GalleryBlock {
+  title?: string | null;
+  columns?: ('2' | '3' | '4') | null;
+  images?:
+    | {
+        image: string | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'galleryBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapBlock".
+ */
+export interface MapBlock {
+  title?: string | null;
+  /**
+   * Salin URL embed dari Google Maps (format: https://www.google.com/maps/d/embed?...)
+   */
+  embedUrl: string;
+  height?: ('350' | '500' | '650' | '800') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mapBlock';
+}
+/**
  * Manage all internship data including past, current, and future interns
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1348,6 +1416,9 @@ export interface PagesSelect<T extends boolean = true> {
         analyticsBlock?: T | AnalyticsBlockSelect<T>;
         servicesBlock?: T | ServicesBlockSelect<T>;
         agendaBlock?: T | AgendaBlockSelect<T>;
+        documentTableBlock?: T | DocumentTableBlockSelect<T>;
+        galleryBlock?: T | GalleryBlockSelect<T>;
+        mapBlock?: T | MapBlockSelect<T>;
       };
   meta?:
     | T
@@ -1511,6 +1582,62 @@ export interface ServicesBlockSelect<T extends boolean = true> {
 export interface AgendaBlockSelect<T extends boolean = true> {
   title?: T;
   limit?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DocumentTableBlock_select".
+ */
+export interface DocumentTableBlockSelect<T extends boolean = true> {
+  title?: T;
+  columns?:
+    | T
+    | {
+        label?: T;
+        type?: T;
+        id?: T;
+      };
+  rows?:
+    | T
+    | {
+        cells?:
+          | T
+          | {
+              value?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryBlock_select".
+ */
+export interface GalleryBlockSelect<T extends boolean = true> {
+  title?: T;
+  columns?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapBlock_select".
+ */
+export interface MapBlockSelect<T extends boolean = true> {
+  title?: T;
+  embedUrl?: T;
+  height?: T;
   id?: T;
   blockName?: T;
 }
