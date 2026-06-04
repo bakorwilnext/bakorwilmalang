@@ -1016,8 +1016,6 @@ export interface MapBlock {
   blockType: 'mapBlock';
 }
 /**
- * Manage all internship data including past, current, and future interns
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "internships".
  */
@@ -1070,8 +1068,6 @@ export interface Agenda {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Manage blog post comments and moderation
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "comments".
  */

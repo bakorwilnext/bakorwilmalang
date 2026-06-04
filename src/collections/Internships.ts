@@ -16,8 +16,6 @@ export const Internships: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'school', 'faculty', 'startDate', 'endDate', 'status'],
-    group: 'Human Resources',
-    description: 'Manage all internship data including past, current, and future interns',
   },
   access: {
     read: () => true,
