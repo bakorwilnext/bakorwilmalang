@@ -11,8 +11,6 @@ export const Comments: CollectionConfig = {
   admin: {
     useAsTitle: 'authorName',
     defaultColumns: ['authorName', 'post', 'status', 'createdAt'],
-    group: 'Content',
-    description: 'Manage blog post comments and moderation',
   },
   access: {
     create: anyone,
