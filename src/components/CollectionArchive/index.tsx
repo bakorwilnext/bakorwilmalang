@@ -26,20 +26,17 @@ function formatDate(dateStr: string): string {
   return `${d.getDate()} ${MONTH_SHORT_ID[d.getMonth()]} ${d.getFullYear()}`
 }
 
-function getPostImage(post: Post): string | null {
-  // Hero image
+function getPostImage(post: Post): string | null {              
   const hero = (post as any).hero
   if (hero?.media && typeof hero.media === 'object' && hero.media.url) {
     return hero.media.url
   }
-
-  // Featured image
+                  
   const featured = (post as any).featuredImage
   if (featured && typeof featured === 'object' && featured.url) {
     return featured.url
   }
-
-  // Meta image
+               
   const metaImage = (post.meta as any)?.image
   if (metaImage && typeof metaImage === 'object' && metaImage.url) {
     return metaImage.url
@@ -166,8 +163,7 @@ export const CollectionArchive: React.FC<CollectionArchiveProps> = ({
           </button>
         )}
       </div>
-
-      {/* Posts Grid */}
+                        
       {filteredPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPosts.map((post) => (
@@ -203,9 +199,7 @@ export const CollectionArchive: React.FC<CollectionArchiveProps> = ({
       )}
     </div>
   )
-}
-
-/* ─── Sub-components ─── */
+}                            
 
 function PostCard({ post }: { post: Post }) {
   const image = getPostImage(post)

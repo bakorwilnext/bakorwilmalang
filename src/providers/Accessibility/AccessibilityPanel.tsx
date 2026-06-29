@@ -22,8 +22,7 @@ export const AccessibilityPanel: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-6 left-6 z-[9999] w-96 max-w-[calc(100vw-3rem)] max-h-[calc(100vh-3rem)] bg-card border-2 border-border rounded-xl shadow-2xl overflow-hidden flex flex-col">
-      {/* Header */}
+    <div className="fixed bottom-6 left-6 z-[9999] w-96 max-w-[calc(100vw-3rem)] max-h-[calc(100vh-3rem)] bg-card border-2 border-border rounded-xl shadow-2xl overflow-hidden flex flex-col">                   
       <div className="flex items-center justify-between p-4 border-b-2 border-border bg-gradient-to-r from-primary/10 to-primary/5 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary/10 rounded-lg">
@@ -48,11 +47,8 @@ export const AccessibilityPanel: React.FC = () => {
             <X className="w-4 h-4" />
           </button>
         </div>
-      </div>
-
-      {/* Content */}
-      <div className="overflow-y-auto flex-1 p-5 space-y-6 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-        {/* Text Size */}
+      </div>                     
+      <div className="overflow-y-auto flex-1 p-5 space-y-6 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">                        
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -78,8 +74,7 @@ export const AccessibilityPanel: React.FC = () => {
             <span>150%</span>
           </div>
         </section>
-
-        {/* Letter Spacing */}
+                              
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="font-semibold text-sm text-foreground">Letter Spacing</label>
@@ -97,8 +92,7 @@ export const AccessibilityPanel: React.FC = () => {
             className="w-full h-2.5 bg-muted rounded-full appearance-none cursor-pointer slider-thumb"
           />
         </section>
-
-        {/* Line Height */}
+                           
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="font-semibold text-sm text-foreground">Line Height</label>
@@ -119,7 +113,7 @@ export const AccessibilityPanel: React.FC = () => {
 
         <div className="border-t border-border pt-4"></div>
 
-        {/* Visual Adjustments */}
+                                  
         <section className="space-y-3">
           <div className="flex items-center gap-2 mb-3">
             <Eye className="w-4 h-4 text-primary" />
@@ -155,8 +149,7 @@ export const AccessibilityPanel: React.FC = () => {
         </section>
 
         <div className="border-t border-border pt-4"></div>
-
-        {/* Font Options */}
+                            
         <section className="space-y-3">
           <h3 className="font-semibold text-sm text-foreground">Font Options</h3>
           <ToggleOption
@@ -168,8 +161,7 @@ export const AccessibilityPanel: React.FC = () => {
         </section>
 
         <div className="border-t border-border pt-4"></div>
-
-        {/* Text Alignment */}
+                             
         <section className="space-y-3">
           <div className="flex items-center gap-2">
             <AlignLeft className="w-4 h-4 text-primary" />
@@ -193,8 +185,7 @@ export const AccessibilityPanel: React.FC = () => {
         </section>
 
         <div className="border-t border-border pt-4"></div>
-
-        {/* Cursor Size */}
+                          
         <section className="space-y-3">
           <div className="flex items-center gap-2">
             <MousePointer className="w-4 h-4 text-primary" />
@@ -218,8 +209,7 @@ export const AccessibilityPanel: React.FC = () => {
         </section>
 
         <div className="border-t border-border pt-4"></div>
-
-        {/* Reading Aids */}
+                            
         <section className="space-y-3">
           <h3 className="font-semibold text-sm text-foreground">Reading Aids</h3>
           <div className="space-y-2">

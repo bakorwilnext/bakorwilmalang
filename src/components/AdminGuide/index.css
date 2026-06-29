@@ -218,8 +218,7 @@
   color: var(--theme-elevation-600) !important;
   font-style: italic;
 }
-
-/* Responsive styles */
+                      
 @media (max-width: 768px) {
   .admin-guide {
     padding: 1rem;

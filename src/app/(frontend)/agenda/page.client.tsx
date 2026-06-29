@@ -70,8 +70,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
     },
     [createSafeDate],
   )
-
-  // Filter & search
+                   
   const filteredItems = useMemo(() => {
     const now = new Date()
     now.setHours(0, 0, 0, 0)
@@ -79,12 +78,10 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
     return items.filter((item) => {
       const date = createSafeDate(item.startDate)
       if (!date) return false
-
-      // Time filter
+                    
       if (filterTime === 'upcoming' && date.getTime() < now.getTime()) return false
       if (filterTime === 'past' && date.getTime() >= now.getTime()) return false
-
-      // Search filter
+                     
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase()
         const matchTitle = item.title?.toLowerCase().includes(q)
@@ -217,10 +214,8 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
                       {year}
                     </span>
                   </div>
-
-                  {/* Event Details */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-between">
-                    {/* Time */}
+                                       
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">                               
                     {time && (
                       <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-1.5">
                         <Clock className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
@@ -230,21 +225,18 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
                         </span>
                       </div>
                     )}
-
-                    {/* Title */}
+                                 
                     <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition-colors duration-200">
                       {event.title}
                     </h3>
-
-                    {/* Location */}
+                                   
                     {event.location && (
                       <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2">
                         <MapPin className="w-3.5 h-3.5 mr-1.5 flex-shrink-0 text-cyan-500 dark:text-cyan-400" />
                         <span className="truncate">{event.location}</span>
                       </div>
                     )}
-
-                    {/* Read more link */}
+                                         
                     <div className="flex items-center text-xs font-medium text-cyan-500 dark:text-cyan-400 mt-2.5 group-hover:translate-x-1 transition-transform duration-200">
                       <span className="group-hover:underline underline-offset-2">Selengkapnya</span>
                       <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
@@ -256,8 +248,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
           })}
         </div>
       )}
-
-      {/* Pagination */}
+                        
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-12">
           <button
@@ -291,8 +282,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
           </button>
         </div>
       )}
-
-      {/* Event Detail Modal */}
+                                
       {showModal && selectedEvent && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
@@ -301,8 +291,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
           <div
             className="bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
             onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
+          >                                
             <div className="relative p-6 pb-4">
               <button
                 onClick={closeModal}
@@ -311,8 +300,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
               >
                 <X className="w-5 h-5" />
               </button>
-
-              {/* Date Badge */}
+                                
               {(() => {
                 const date = createSafeDate(selectedEvent.startDate)
                 if (!date) return null
@@ -328,8 +316,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
                 {selectedEvent.title}
               </h2>
             </div>
-
-            {/* Modal Content */}
+                                
             <div className="px-6 pb-6">
               {selectedEvent.description && (
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 text-sm">
@@ -337,8 +324,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
                 </p>
               )}
 
-              <div className="space-y-3">
-                {/* Time */}
+              <div className="space-y-3">                           
                 <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <div className="w-9 h-9 bg-cyan-100 dark:bg-cyan-900/40 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Clock className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
@@ -351,8 +337,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
                     </div>
                   </div>
                 </div>
-
-                {/* Location */}
+                               
                 {selectedEvent.location && (
                   <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                     <div className="w-9 h-9 bg-cyan-100 dark:bg-cyan-900/40 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -368,8 +353,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
                 )}
               </div>
             </div>
-
-            {/* Modal Footer */}
+                                
             <div className="px-6 pb-6">
               <button
                 onClick={closeModal}

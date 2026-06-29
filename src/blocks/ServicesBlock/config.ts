@@ -1,7 +1,7 @@
 import type { Block } from 'payload'
 
 const ICON_OPTIONS = [
-  // Pemerintahan & Koordinasi
+                              
   { label: 'Landmark (Pemerintahan)', value: 'landmark' },
   { label: 'Building (Gedung/Kantor)', value: 'building' },
   { label: 'Briefcase (Dinas/Jabatan)', value: 'briefcase' },
@@ -9,7 +9,7 @@ const ICON_OPTIONS = [
   { label: 'Users (Masyarakat/Tim)', value: 'users' },
   { label: 'UserCheck (Verifikasi)', value: 'user-check' },
 
-  // Layanan Publik
+                   
   { label: 'FileText (Dokumen/Surat)', value: 'file-text' },
   { label: 'FileBadge (Sertifikat)', value: 'file-badge' },
   { label: 'ClipboardList (Administrasi)', value: 'clipboard-list' },
@@ -17,7 +17,7 @@ const ICON_OPTIONS = [
   { label: 'Scale (Hukum)', value: 'scale' },
   { label: 'ShieldCheck (Keamanan/Perizinan)', value: 'shield-check' },
 
-  // Informasi & Komunikasi
+                           
   { label: 'Info (Informasi)', value: 'info' },
   { label: 'Megaphone (Pengumuman)', value: 'megaphone' },
   { label: 'Newspaper (Berita/PPID)', value: 'newspaper' },
@@ -25,7 +25,7 @@ const ICON_OPTIONS = [
   { label: 'Phone (Kontak)', value: 'phone' },
   { label: 'Globe (Website/Portal)', value: 'globe' },
 
-  // Pembangunan & Infrastruktur
+                                
   { label: 'HardHat (Pembangunan)', value: 'hard-hat' },
   { label: 'MapPin (Lokasi/Wilayah)', value: 'map-pin' },
   { label: 'Map (Peta Wilayah)', value: 'map' },
@@ -33,19 +33,19 @@ const ICON_OPTIONS = [
   { label: 'Droplets (Air/Sumber Daya)', value: 'droplets' },
   { label: 'Leaf (Lingkungan)', value: 'leaf' },
 
-  // Pendidikan & Sosial
+                        
   { label: 'GraduationCap (Pendidikan)', value: 'graduation-cap' },
   { label: 'HeartPulse (Kesehatan)', value: 'heart-pulse' },
   { label: 'BookOpen (Pembelajaran)', value: 'book-open' },
   { label: 'Award (Penghargaan)', value: 'award' },
 
-  // Keuangan & Data
+                    
   { label: 'BarChart3 (Statistik/Data)', value: 'bar-chart-3' },
   { label: 'PieChart (Anggaran)', value: 'pie-chart' },
   { label: 'TrendingUp (Perkembangan)', value: 'trending-up' },
   { label: 'Database (Basis Data)', value: 'database' },
 
-  // Umum
+         
   { label: 'Settings (Pengaturan)', value: 'settings' },
   { label: 'Calendar (Agenda/Jadwal)', value: 'calendar' },
   { label: 'Clock (Waktu/Jam Kerja)', value: 'clock' },

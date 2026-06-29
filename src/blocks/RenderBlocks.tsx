@@ -29,8 +29,7 @@ const blockComponents = {
   galleryBlock: GalleryBlock,
   mapBlock: MapBlock,
 }
-
-// Blocks with full-width backgrounds that should render flush (no outer margin)
+                                                                               
 const flushBlocks = new Set(['servicesBlock'])
 
 export const RenderBlocks: React.FC<{

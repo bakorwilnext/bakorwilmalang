@@ -29,7 +29,7 @@ export const Agenda: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
-      index: true, // Index for faster queries
+      index: true,                            
       admin: {
         placeholder: 'Event title...',
       },
@@ -77,12 +77,10 @@ export const Agenda: CollectionConfig = {
       },
     },
     maxPerDoc: 50,
-  },
-  // Add hooks for performance optimization
+  },                                      
   hooks: {
     beforeChange: [
-      ({ data }) => {
-        // Ensure dates are properly formatted
+      ({ data }) => {                                              
         if (data.startDate && typeof data.startDate === 'string') {
           data.startDate = new Date(data.startDate).toISOString();
         }

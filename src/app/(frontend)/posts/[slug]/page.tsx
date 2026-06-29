@@ -51,8 +51,7 @@ export default async function Post({ params: paramsPromise }: Args) {
   const post = await queryPostBySlug({ slug })
 
   if (!post) return <PayloadRedirects url={url} />
-
-  // full URL for sharing
+                        
   const baseUrl = getServerSideURL()
   const fullUrl = `${baseUrl}/posts/${post.slug}`
   const shareDescription = post.meta?.description || `Read "${post.title}" on our website.`
@@ -76,8 +75,7 @@ export default async function Post({ params: paramsPromise }: Args) {
             initialViews={typeof post.viewCount === 'number' ? post.viewCount : 0}
             className="mt-4 max-w-[48rem] mx-auto"
           />
-          
-          {/* Share buttons and view counter section */}
+                                                                  
           <div className="max-w-[48rem] mx-auto mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
             <ShareButtons
               title={post.title}

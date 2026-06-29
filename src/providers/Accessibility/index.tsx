@@ -4,9 +4,9 @@ import React, { createContext, useCallback, use, useEffect, useState } from 'rea
 import canUseDOM from '@/utilities/canUseDOM'
 
 export interface AccessibilitySettings {
-  fontSize: number // 100 = default, range 80-150
-  letterSpacing: number // 0 = default, range 0-5
-  lineHeight: number // 1.5 = default, range 1.2-2.5
+  fontSize: number                               
+  letterSpacing: number                          
+  lineHeight: number                                
   highContrast: boolean
   grayscale: boolean
   invertColors: boolean
@@ -59,8 +59,7 @@ const AccessibilityContext = createContext<AccessibilityContextType>({
 export const AccessibilityProvider = ({ children }: { children: React.ReactNode }) => {
   const [settings, setSettings] = useState<AccessibilitySettings>(defaultSettings)
   const [isPanelOpen, setIsPanelOpen] = useState(false)
-
-  // Load settings from localStorage on mount
+                                            
   useEffect(() => {
     if (canUseDOM) {
       const stored = localStorage.getItem(localStorageKey)
@@ -74,92 +73,77 @@ export const AccessibilityProvider = ({ children }: { children: React.ReactNode 
       }
     }
   }, [])
-
-// Apply settings to DOM
+                       
   useEffect(() => {
     if (!canUseDOM) return
 
     const root = document.documentElement
     const body = document.body
-
-    // Font size - apply to root for better scaling
+                                                   
     root.style.fontSize = `${settings.fontSize}%`
-
-    // Letter spacing - apply to content areas
+                                              
     root.style.setProperty('--accessibility-letter-spacing', `${settings.letterSpacing}px`)
-
-    // Line height - apply to content areas
+                                           
     root.style.setProperty('--accessibility-line-height', settings.lineHeight.toString())
-
-    // High contrast - apply to root instead of body to avoid filter issues
+                                                                           
     if (settings.highContrast) {
       root.classList.add('accessibility-high-contrast')
     } else {
       root.classList.remove('accessibility-high-contrast')
     }
-
-    // Grayscale
+                
     if (settings.grayscale) {
       root.classList.add('accessibility-grayscale')
     } else {
       root.classList.remove('accessibility-grayscale')
     }
-
-    // Invert colors
+                    
     if (settings.invertColors) {
       root.classList.add('accessibility-invert')
     } else {
       root.classList.remove('accessibility-invert')
     }
-
-    // Readable font
+                   
     if (settings.readableFont) {
       body.classList.add('accessibility-readable-font')
     } else {
       body.classList.remove('accessibility-readable-font')
     }
-
-    // Hide images
+                 
     if (settings.hideImages) {
       body.classList.add('accessibility-hide-images')
     } else {
       body.classList.remove('accessibility-hide-images')
     }
-
-    // Highlight links
+                     
     if (settings.highlightLinks) {
       body.classList.add('accessibility-highlight-links')
     } else {
       body.classList.remove('accessibility-highlight-links')
     }
-
-    // Text align
+                 
     root.style.setProperty(
       '--accessibility-text-align',
       settings.textAlign === 'default' ? 'inherit' : settings.textAlign,
     )
-
-    // Cursor size
+                  
     body.classList.remove('accessibility-cursor-large', 'accessibility-cursor-xlarge')
     if (settings.cursorSize !== 'default') {
       body.classList.add(`accessibility-cursor-${settings.cursorSize}`)
     }
-
-    // Reading guide
+                   
     if (settings.readingGuide) {
       body.classList.add('accessibility-reading-guide')
     } else {
       body.classList.remove('accessibility-reading-guide')
     }
-
-    // Focus highlight
+                      
     if (settings.focusHighlight) {
       body.classList.add('accessibility-focus-highlight')
     } else {
       body.classList.remove('accessibility-focus-highlight')
     }
-
-    // Save to localStorage
+                           
     localStorage.setItem(localStorageKey, JSON.stringify(settings))
   }, [settings])
 
