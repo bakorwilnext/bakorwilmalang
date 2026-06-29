@@ -53,8 +53,7 @@ export const ThemeSelector: React.FC = () => {
             className="transition-all duration-300"
           />
         )
-      default:
-        // Monitor icon (auto/system)
+      default:                                     
         return (
           <g>
             <rect

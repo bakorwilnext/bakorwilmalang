@@ -127,8 +127,7 @@ export const FormBlockClient: React.FC<
               <div className="mb-4 last:mb-0">
                 {formFromProps &&
                   formFromProps.fields &&
-                  formFromProps.fields?.map((field, index) => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  formFromProps.fields?.map((field, index) => {                                                                                  
                     const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
                     if (Field) {
                       return (

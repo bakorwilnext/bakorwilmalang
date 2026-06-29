@@ -40,9 +40,7 @@ import {
   ExternalLink,
   Star,
   type LucideIcon,
-} from 'lucide-react'
-
-/* ─── Icon map ─── */
+} from 'lucide-react'                      
 
 const ICON_MAP: Record<string, LucideIcon> = {
   landmark: Landmark,
@@ -83,9 +81,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   download: Download,
   'external-link': ExternalLink,
   star: Star,
-}
-
-/* ─── Types ─── */
+}                  
 
 interface ServiceItem {
   icon?: string
@@ -108,9 +104,7 @@ interface ServicesBlockProps {
   services?: ServiceItem[]
   className?: string
   disableInnerContainer?: boolean
-}
-
-/* ─── Helpers ─── */
+}                     
 
 function resolveHref(service: ServiceItem): string | null {
   const { link } = service
@@ -127,9 +121,7 @@ function resolveHref(service: ServiceItem): string | null {
   }
 
   return null
-}
-
-/* ─── Main Component ─── */
+}                           
 
 export const ServicesBlock: React.FC<ServicesBlockProps> = ({
   sectionTitle = 'Layanan',
@@ -165,9 +157,7 @@ export const ServicesBlock: React.FC<ServicesBlockProps> = ({
       </div>
     </section>
   )
-}
-
-/* ─── Service Card ─── */
+}                        
 
 function ServiceCard({ service }: { service: ServiceItem }) {
   const { icon, title, description, link } = service
@@ -176,18 +166,15 @@ function ServiceCard({ service }: { service: ServiceItem }) {
   const IconComponent = ICON_MAP[icon || 'briefcase'] || Briefcase
 
   const content = (
-    <div className="group flex flex-col items-center text-center">
-      {/* Icon Circle */}
+    <div className="group flex flex-col items-center text-center">                         
       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white/40 flex items-center justify-center mb-4 group-hover:border-white/80 transition-colors duration-300">
         <IconComponent className="w-7 h-7 sm:w-9 sm:h-9 text-white" strokeWidth={1.5} />
       </div>
-
-      {/* Title */}
+                  
       <h3 className="text-sm sm:text-base font-bold text-white mb-1 leading-tight group-hover:underline underline-offset-4 decoration-2 transition-all duration-200">
         {title}
       </h3>
-
-      {/* Description */}
+                         
       {description && (
         <p className="text-[11px] sm:text-xs text-cyan-100 leading-relaxed max-w-[160px]">
           {description}

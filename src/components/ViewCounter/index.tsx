@@ -18,13 +18,11 @@ export const ViewCounter: React.FC<ViewCounterProps> = ({
 
   useEffect(() => {
     const incrementView = async () => {
-      try {
-        // Check if we've already counted this view in this session
+      try {                                                                  
         const viewedKey = `post_viewed_${slug}`
         const hasViewed = sessionStorage.getItem(viewedKey)
 
-        if (!hasViewed) {
-          // Increment the view count
+        if (!hasViewed) {                                     
           const response = await fetch('/api/post-views', {
             method: 'POST',
             headers: {
@@ -35,12 +33,10 @@ export const ViewCounter: React.FC<ViewCounterProps> = ({
 
           if (response.ok) {
             const data = await response.json()
-            setViews(data.viewCount)
-            // Mark as viewed in this session
+            setViews(data.viewCount)                                            
             sessionStorage.setItem(viewedKey, 'true')
           }
-        } else {
-          // Just fetch the current count without incrementing
+        } else {                                                              
           const response = await fetch(`/api/post-views?slug=${slug}`)
           if (response.ok) {
             const data = await response.json()

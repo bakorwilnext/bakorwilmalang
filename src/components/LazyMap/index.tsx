@@ -20,14 +20,13 @@ export const LazyMap: React.FC<LazyMapProps> = ({ src, title, className = '' }) 
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setIsVisible(true)
-            // Delay actual loading by 100ms after becoming visible
+            setIsVisible(true)                                                                   
             setTimeout(() => setShouldLoad(true), 100)
             observer.disconnect()
           }
         })
       },
-      { rootMargin: '200px' } // Start loading 200px before visible
+      { rootMargin: '200px' }                                      
     )
 
     observer.observe(containerRef.current)

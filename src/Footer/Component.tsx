@@ -23,9 +23,7 @@ export async function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Location Section */}
           <div className="space-y-6">
-            <h3 className="text-xl font-bold text-white mb-6">Lokasi</h3>
-            
-            {/* Google Maps Embed - Lazy Loaded */}
+            <h3 className="text-xl font-bold text-white mb-6">Lokasi</h3>                                                  
             <LazyMap
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.3437000919366!2d112.62150207575247!3d-7.963387679366113!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd6282b6f0d0a61%3A0x474046e3ce87264a!2sBadan%20Koordinasi%20Wilayah%20Pemerintahan%20dan%20Pembangunan%20Jawa%20Timur%20III%20(%20BAKORWIL%20III%20)%20Malang!5e0!3m2!1sid!2sid!4v1721029756068!5m2!1sid!2sid"
               title="Lokasi BAKORWIL III Malang"

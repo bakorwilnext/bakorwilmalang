@@ -164,8 +164,7 @@
 .dashboard .before-dashboard a:hover {
   opacity: 0.85;
 }
-
-/* Responsive styles */
+                       
 @media (max-width: 768px) {
   .dashboard .before-dashboard__guide-button {
     width: 100%;

@@ -55,8 +55,7 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
   },
 })
 
-type Props = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Props = {                                                                
   data: any
   enableGutter?: boolean
   enableProse?: boolean

@@ -140,9 +140,9 @@ export const ShareButtons: React.FC<ShareButtonsProps> = ({
         </Button>
       </div>
 
-      {/* <p className="text-sm text-gray-600 dark:text-gray-400">
-        Share this post with your friends and followers
-      </p> */}
+                                                                  
+                                                       
+              
     </div>
   )
 }

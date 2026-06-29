@@ -95,15 +95,13 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
       const date = createSafeDate(item.startDate)
       return date ? date.getTime() >= now.getTime() : false
     })
-
-    // Fallback to most recent if nothing upcoming
+                                                 
     if (upcoming.length === 0) return agendaItems.slice(-limit)
     return upcoming.slice(0, limit)
   }, [agendaItems, limit])
 
   const containerClass = `w-full mx-auto py-16 ${!disableInnerContainer ? 'container px-4' : ''}`
-
-  // Loading skeleton
+                    
   if (loading) {
     return (
       <section className={containerClass}>
@@ -130,8 +128,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
       </section>
     )
   }
-
-  // Empty state
+               
   if (upcomingEvents.length === 0) {
     return (
       <section className={containerClass}>
@@ -153,9 +150,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
     <>
       <section className={containerClass}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader />
-
-          {/* Agenda Cards Grid */}
+          <SectionHeader />                                  
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {upcomingEvents.map((event) => (
               <AgendaCard
@@ -165,8 +160,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
               />
             ))}
           </div>
-
-          {/* View All Button */}
+                                
           <div className="flex justify-center mt-10">
             <a
               href="/agenda"
@@ -186,8 +180,7 @@ const AgendaBlock: React.FC<AgendaBlockProps> = ({
     </>
   )
 }
-
-/* ─── Sub-components ─── */
+                           
 
 function SectionHeader() {
   return (
@@ -214,8 +207,7 @@ function AgendaCard({ event, onClick }: { event: AgendaItem; onClick: () => void
       onClick={onClick}
       className="group w-full text-left rounded-xl transition-all duration-300 hover:-translate-y-0.5 overflow-hidden"
     >
-      <div className="p-5 sm:p-6 flex gap-5">
-        {/* Date Box */}
+      <div className="p-5 sm:p-6 flex gap-5">                        
         <div className="flex-shrink-0 w-[72px] h-[84px] bg-cyan-500 group-hover:bg-cyan-600 rounded-lg flex flex-col items-center justify-center transition-colors duration-300 shadow-sm">
           <span className="text-2xl font-bold text-white leading-none">
             {String(date.getDate()).padStart(2, '0')}
@@ -227,8 +219,7 @@ function AgendaCard({ event, onClick }: { event: AgendaItem; onClick: () => void
             {date.getFullYear()}
           </span>
         </div>
-
-        {/* Details */}
+                      
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           {time && (
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-1.5">
@@ -287,8 +278,7 @@ function EventModal({ event, onClose }: { event: AgendaItem; onClose: () => void
             {event.title}
           </h2>
         </div>
-
-        {/* Content */}
+                       
         <div className="px-6 pb-6">
           {event.description && (
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 text-sm">
@@ -311,8 +301,7 @@ function EventModal({ event, onClose }: { event: AgendaItem; onClose: () => void
             )}
           </div>
         </div>
-
-        {/* Footer */}
+                    
         <div className="px-6 pb-6">
           <button
             onClick={onClose}

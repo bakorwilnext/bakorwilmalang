@@ -63,8 +63,7 @@
     & li {
       width: 100%;
       padding: base(1);
-      margin-bottom: base(1);
-      // background: white;
+      margin-bottom: base(1);                           
       border-radius: 6px;
       border-left: 4px solid var(--theme-success-500);
       line-height: 1.6;
@@ -168,8 +167,7 @@
   & a:hover {
     opacity: 0.85;
   }
-
-  // Responsive styles
+                     
   @media (max-width: 768px) {
     &__guide-button {
       width: 100%;
