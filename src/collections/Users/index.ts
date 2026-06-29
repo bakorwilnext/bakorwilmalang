@@ -1,10 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '../../access/authenticated'
+import { adminOrEditor } from '../../access/adminOrEditor'
+import { adminOnly } from '../../access/adminOnly'
 import { protectRoles } from './hooks/protectRoles'
-import editor from './access/editor'
-import admin from './access/admin'
-import user from './access/user'
 import { checkRole } from './access/checkRole'
 import { User } from '@/payload-types'
 
@@ -12,10 +11,10 @@ export const Users: CollectionConfig = {
   slug: 'users',
   access: {
     admin: authenticated,
-    create: admin,
-    delete: admin,
-    read: user,
-    update: editor,
+    create: adminOnly,
+    delete: adminOnly,
+    read: adminOrEditor,
+    update: adminOrEditor,
   },
   admin: {
     defaultColumns: ['name', 'email'],

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
+import { adminOrEditor } from '../access/adminOrEditor'
+import { adminOnly } from '../access/adminOnly'
 
 export const Comments: CollectionConfig = {
   slug: 'comments',
@@ -22,8 +23,8 @@ export const Comments: CollectionConfig = {
         },
       }
     },
-    update: authenticated,
-    delete: authenticated,
+    update: adminOrEditor,
+    delete: adminOnly,
   },
   fields: [
     {
