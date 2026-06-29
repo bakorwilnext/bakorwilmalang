@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
-import { authenticated } from '../../access/authenticated'
+import { adminOrEditor } from '../../access/adminOrEditor'
+import { adminOnly } from '../../access/adminOnly'
 import { anyone } from '../../access/anyone'
 import fs from 'fs'
 import path from 'path'
@@ -8,9 +9,9 @@ export const PDFs: CollectionConfig = {
   slug: 'pdfs',
   access: {
     create: anyone, // Allow public uploads from forms
-    delete: authenticated,
+    delete: adminOnly,
     read: anyone, // Allow public downloads
-    update: authenticated,
+    update: adminOrEditor,
   },
   admin: {
     defaultColumns: ['filename', 'title', 'filesize', 'createdAt'],

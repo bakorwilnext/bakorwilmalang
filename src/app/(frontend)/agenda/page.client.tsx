@@ -97,14 +97,12 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
     })
   }, [items, filterTime, searchQuery, createSafeDate])
 
-  // Pagination
   const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE)
   const paginatedItems = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE
     return filteredItems.slice(start, start + ITEMS_PER_PAGE)
   }, [filteredItems, currentPage])
 
-  // Reset page on filter change
   const handleFilterChange = (filter: 'all' | 'upcoming' | 'past') => {
     setFilterTime(filter)
     setCurrentPage(1)
@@ -127,9 +125,7 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
 
   return (
     <>
-      {/* Filter & Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-10">
-        {/* Search */}
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -141,7 +137,6 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
           />
         </div>
 
-        {/* Time Filter */}
         <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
           {([
             { key: 'all', label: 'Semua' },
@@ -163,12 +158,10 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
         </div>
       </div>
 
-      {/* Results count */}
       <div className="mb-6 text-sm text-gray-500 dark:text-gray-400">
         Menampilkan {paginatedItems.length} dari {filteredItems.length} agenda
       </div>
 
-      {/* Agenda List */}
       {paginatedItems.length === 0 ? (
         <div className="text-center py-20">
           <Calendar className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
@@ -199,7 +192,6 @@ export default function AgendaPageClient({ items }: AgendaPageClientProps) {
                 className="group w-full text-left rounded-xl transition-all duration-300 hover:-translate-y-0.5 overflow-hidden"
               >
                 <div className="p-5 sm:p-6 flex gap-5">
-                  {/* Calendar Date Box */}
                   <div
                     className={`flex-shrink-0 w-[72px] h-[84px] rounded-lg flex flex-col items-center justify-center transition-colors duration-300 shadow-sm ${
                       isPast

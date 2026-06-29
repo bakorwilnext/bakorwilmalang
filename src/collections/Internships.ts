@@ -1,4 +1,6 @@
 import type { CollectionConfig } from 'payload'
+import { adminOrEditor } from '../access/adminOrEditor'
+import { adminOnly } from '../access/adminOnly'
 
 interface InternshipData {
   startDate: string
@@ -19,15 +21,9 @@ export const Internships: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req: { user } }) => {
-      return Boolean(user)
-    },
-    update: ({ req: { user } }) => {
-      return Boolean(user)
-    },
-    delete: ({ req: { user } }) => {
-      return Boolean(user)
-    },
+    create: adminOrEditor,
+    update: adminOrEditor,
+    delete: adminOnly,
   },
   fields: [
     {

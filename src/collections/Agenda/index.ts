@@ -1,14 +1,15 @@
 import type { CollectionConfig } from 'payload'
-import { authenticated } from '../../access/authenticated'
+import { adminOrEditor } from '../../access/adminOrEditor'
+import { adminOnly } from '../../access/adminOnly'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 
 export const Agenda: CollectionConfig = {
   slug: 'agenda',
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: adminOrEditor,
+    delete: adminOnly,
     read: authenticatedOrPublished,
-    update: authenticated,
+    update: adminOrEditor,
   },
   defaultPopulate: {
     title: true,
