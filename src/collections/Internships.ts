@@ -36,10 +36,18 @@ export const Internships: CollectionConfig = {
       },
     },
     {
+      name: 'nim',
+      type: 'text',
+      label: 'NIM / NIS',
+      admin: {
+        placeholder: 'e.g., 210412624005',
+      },
+    },
+    {
       name: 'school',
       type: 'text',
       label: 'School/Campus Origin',
-      required: true,
+      required: false,
       admin: {
         placeholder: 'e.g., University of Indonesia',
       },
@@ -48,7 +56,7 @@ export const Internships: CollectionConfig = {
       name: 'faculty',
       type: 'text',
       label: 'Faculty',
-      required: true,
+      required: false,
       admin: {
         placeholder: 'e.g., Faculty of Computer Science',
       },
@@ -57,7 +65,7 @@ export const Internships: CollectionConfig = {
       name: 'studyProgram',
       type: 'text',
       label: 'Study Program (Prodi)',
-      required: true,
+      required: false,
       admin: {
         placeholder: 'e.g., Information Systems',
       },
@@ -66,7 +74,7 @@ export const Internships: CollectionConfig = {
       name: 'startDate',
       type: 'date',
       label: 'Internship Start Date',
-      required: true,
+      required: false,
       admin: {
         date: {
           pickerAppearance: 'dayAndTime',
@@ -77,21 +85,13 @@ export const Internships: CollectionConfig = {
       name: 'endDate',
       type: 'date',
       label: 'Internship End Date',
-      required: true,
+      required: false,
       admin: {
         date: {
           pickerAppearance: 'dayAndTime',
         },
       },
       validate: (value, { siblingData }) => {
-        if (value && siblingData && typeof siblingData === 'object' && 'startDate' in siblingData) {
-          const startDate = new Date(siblingData.startDate as string)
-          const endDate = new Date(value)
-          
-          if (endDate <= startDate) {
-            return 'End date must be after start date'
-          }
-        }
         return true
       },
     },
@@ -114,8 +114,8 @@ export const Internships: CollectionConfig = {
               value: 'link',
             },
           ],
-          defaultValue: 'upload',
-          required: true,
+          defaultValue: 'link',
+          required: false,
         },
         {
           name: 'file',
@@ -124,12 +124,6 @@ export const Internships: CollectionConfig = {
           label: 'Upload PDF',
           admin: {
             condition: (_, siblingData) => siblingData?.type === 'upload',
-          },
-          validate: (value: any, { siblingData }: { siblingData: any }) => {
-            if (siblingData && typeof siblingData === 'object' && 'type' in siblingData && siblingData.type === 'upload' && !value) {
-              return 'Please upload the acceptance letter PDF'
-            }
-            return true
           },
         },
         {
@@ -140,12 +134,8 @@ export const Internships: CollectionConfig = {
             condition: (_, siblingData) => siblingData?.type === 'link',
             placeholder: 'https://example.com/acceptance-letter.pdf',
           },
-          validate: (value: any, { siblingData }: { siblingData: any }) => {
-            if (siblingData && typeof siblingData === 'object' && 'type' in siblingData && siblingData.type === 'link') {
-              if (!value) {
-                return 'Please provide the acceptance letter URL'
-              }
-              // Basic URL validation
+          validate: (value: any) => {
+            if (value) {
               try {
                 new URL(value as string)
               } catch {
@@ -180,14 +170,6 @@ export const Internships: CollectionConfig = {
       admin: {
         description: 'This is automatically calculated based on start and end dates',
         readOnly: true,
-      },
-    },
-    {
-      name: 'department',
-      type: 'text',
-      label: 'Department/Division',
-      admin: {
-        placeholder: 'e.g., IT Department, Marketing, HR',
       },
     },
     {
@@ -250,16 +232,15 @@ export const Internships: CollectionConfig = {
     beforeChange: [
       ({ data }: { data: any }) => {
         // Automatically calculate status based on dates
+        const now = new Date()
+        now.setHours(0, 0, 0, 0)
+
         if (data.startDate && data.endDate) {
-          const now = new Date()
           const startDate = new Date(data.startDate)
           const endDate = new Date(data.endDate)
-          
-          // Reset time to compare dates only
-          now.setHours(0, 0, 0, 0)
           startDate.setHours(0, 0, 0, 0)
           endDate.setHours(0, 0, 0, 0)
-          
+
           if (now < startDate) {
             data.status = 'upcoming'
           } else if (now >= startDate && now <= endDate) {
@@ -267,24 +248,33 @@ export const Internships: CollectionConfig = {
           } else {
             data.status = 'completed'
           }
+        } else if (data.endDate) {
+          const endDate = new Date(data.endDate)
+          endDate.setHours(0, 0, 0, 0)
+          data.status = now > endDate ? 'completed' : 'current'
+        } else if (data.startDate) {
+          const startDate = new Date(data.startDate)
+          startDate.setHours(0, 0, 0, 0)
+          data.status = now < startDate ? 'upcoming' : 'current'
+        } else {
+          data.status = data.status || 'completed'
         }
-        
+
         return data
       },
     ],
     afterRead: [
       ({ doc }: { doc: any }) => {
         // Recalculate status on read to ensure it's always current
+        const now = new Date()
+        now.setHours(0, 0, 0, 0)
+
         if (doc.startDate && doc.endDate) {
-          const now = new Date()
           const startDate = new Date(doc.startDate)
           const endDate = new Date(doc.endDate)
-          
-          // Reset time to compare dates only
-          now.setHours(0, 0, 0, 0)
           startDate.setHours(0, 0, 0, 0)
           endDate.setHours(0, 0, 0, 0)
-          
+
           if (now < startDate) {
             doc.status = 'upcoming'
           } else if (now >= startDate && now <= endDate) {
@@ -292,8 +282,16 @@ export const Internships: CollectionConfig = {
           } else {
             doc.status = 'completed'
           }
+        } else if (doc.endDate) {
+          const endDate = new Date(doc.endDate)
+          endDate.setHours(0, 0, 0, 0)
+          doc.status = now > endDate ? 'completed' : 'current'
+        } else if (doc.startDate) {
+          const startDate = new Date(doc.startDate)
+          startDate.setHours(0, 0, 0, 0)
+          doc.status = now < startDate ? 'upcoming' : 'current'
         }
-        
+
         return doc
       },
     ],

@@ -204,8 +204,8 @@ export const CustomHeroClient: React.FC<CustomHeroClientProps> = ({ media, richT
                   <span
                     className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                       index === currentIndex
-                        ? 'bg-cyan-500 scale-110'
-                        : 'bg-gray-300 dark:bg-gray-600'
+                        ? 'bg-slate-700 scale-110 shadow-sm'
+                        : 'bg-slate-700/35 hover:bg-slate-900/55'
                     }`}
                   />
                 </button>

@@ -51,7 +51,11 @@ export const InternshipsBlock: React.FC<
           </div>
         )}
 
-        {showAnalytics && <InternshipAnalytics internships={internships} />}
+        {showAnalytics && (
+          <div className="mb-10">
+            <InternshipAnalytics internships={internships} />
+          </div>
+        )}
 
         <InternshipsTable
           internships={internships}
