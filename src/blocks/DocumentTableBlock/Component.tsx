@@ -38,25 +38,25 @@ export const DocumentTableBlock: React.FC<DocumentTableBlockProps> = ({
           </h2>
         )}
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-black shadow-xs">
           <table className="w-full border-collapse">
-            <thead>
+            <thead className="bg-slate-700 text-white border-b border-slate-600 text-xs uppercase tracking-wider font-semibold">
               <tr>
                 {columns.map((col, i) => (
                   <th
                     key={i}
-                    className="px-4 sm:px-6 py-3 text-left text-sm font-semibold text-white bg-cyan-500 first:rounded-tl-lg last:rounded-tr-lg"
+                    className="px-4 sm:px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-white"
                   >
                     {col.label}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-black">
               {rows.map((row, rowIdx) => (
                 <tr
                   key={rowIdx}
-                  className="border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+                  className="hover:bg-slate-50/80 dark:hover:bg-slate-900/60 transition-colors duration-150"
                 >
                   {columns.map((col, colIdx) => {
                     const cell = row.cells?.[colIdx]

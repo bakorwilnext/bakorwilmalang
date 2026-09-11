@@ -1022,13 +1022,14 @@ export interface MapBlock {
 export interface Internship {
   id: string;
   name: string;
-  school: string;
-  faculty: string;
-  studyProgram: string;
-  startDate: string;
-  endDate: string;
-  acceptanceLetter: {
-    type: 'upload' | 'link';
+  nim?: string | null;
+  school?: string | null;
+  faculty?: string | null;
+  studyProgram?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  acceptanceLetter?: {
+    type?: ('upload' | 'link') | null;
     file?: (string | null) | Media;
     url?: string | null;
   };
@@ -1036,7 +1037,6 @@ export interface Internship {
    * This is automatically calculated based on start and end dates
    */
   status: 'upcoming' | 'current' | 'completed';
-  department?: string | null;
   supervisor?: string | null;
   notes?: string | null;
   contactEmail?: string | null;
@@ -1812,6 +1812,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface InternshipsSelect<T extends boolean = true> {
   name?: T;
+  nim?: T;
   school?: T;
   faculty?: T;
   studyProgram?: T;
@@ -1825,7 +1826,6 @@ export interface InternshipsSelect<T extends boolean = true> {
         url?: T;
       };
   status?: T;
-  department?: T;
   supervisor?: T;
   notes?: T;
   contactEmail?: T;
